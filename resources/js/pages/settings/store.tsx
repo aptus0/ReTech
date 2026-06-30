@@ -1,5 +1,5 @@
-import { Head, useForm } from '@inertiajs/react';
-import { Store, Building2, Phone, MapPin, Receipt, UploadCloud } from 'lucide-react';
+import { Head, useForm, usePage } from '@inertiajs/react';
+import { Store, Building2, Phone, MapPin, Receipt, UploadCloud, ShieldCheck } from 'lucide-react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ export default function StoreSettings({
     website,
     supportLine
 }: any) {
+    const { license } = usePage().props as any;
     const { data, setData, post, processing, errors } = useForm({
         store_name: storeName || '',
         store_logo: null as File | null,
