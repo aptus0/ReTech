@@ -22,18 +22,33 @@ const sidebarNavItems: NavItem[] = [
         icon: null,
     },
     {
-        title: 'Görünüm',
+        title: 'Görünüm (Tema)',
         href: editAppearance(),
         icon: null,
     },
     {
-        title: 'Program Ayarları',
+        title: 'Ekran & Kiosk Ayarları',
+        href: '/settings/display',
+        icon: null,
+    },
+    {
+        title: 'Program & Şirket Ayarları',
         href: '/settings/store',
         icon: null,
     },
     {
-        title: 'e-Belge (GİB)',
+        title: 'e-Belge ve Fatura Şeması',
         href: '/settings/e-documents',
+        icon: null,
+    },
+    {
+        title: 'Kullanıcı Yönetimi',
+        href: '/settings/users',
+        icon: null,
+    },
+    {
+        title: 'Mobil App Bağlantısı',
+        href: '/settings/mobile-app',
         icon: null,
     },
     {
@@ -46,20 +61,25 @@ const sidebarNavItems: NavItem[] = [
         href: '/barcode-schemas',
         icon: null,
     },
+    {
+        title: 'Pazaryeri Bağlantıları',
+        href: '/settings/marketplaces',
+        icon: null,
+    },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
 
     return (
-        <div className="px-4 py-6">
+        <div className="px-4 py-6 max-w-[1600px] mx-auto w-full">
             <Heading
                 title="Ayarlar"
-                description="Profilinizi ve program ayarlarınızı yönetin"
+                description="Sistem, profil ve entegrasyon ayarlarınızı yönetin"
             />
 
-            <div className="flex flex-col lg:flex-row lg:space-x-12">
-                <aside className="w-full max-w-xl lg:w-48">
+            <div className="flex flex-col lg:flex-row lg:space-x-8 mt-6">
+                <aside className="w-full lg:w-72 flex-shrink-0">
                     <nav
                         className="flex flex-col space-y-1 space-x-0"
                         aria-label="Settings"
@@ -87,8 +107,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
                 <Separator className="my-6 lg:hidden" />
 
-                <div className="flex-1 md:max-w-2xl">
-                    <section className="max-w-xl space-y-12">
+                <div className="flex-1 w-full min-w-0">
+                    <section className="w-full space-y-12">
                         {children}
                     </section>
                 </div>

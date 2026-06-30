@@ -31,4 +31,20 @@ class CalendarEventController extends Controller
 
         return redirect()->back()->with('success', 'Not silindi.');
     }
+
+    public function update(Request $request, CalendarEvent $calendarEvent)
+    {
+        if ($calendarEvent->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'start' => 'required|date',
+            'end' => 'required|date',
+        ]);
+
+        $calendarEvent->update($validated);
+
+        return redirect()->back()->with('success', 'Tarih güncellendi.');
+    }
 }

@@ -1,11 +1,12 @@
 import { Head, Link, useForm, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { Search, Plus, Building2, User, RefreshCw, Trash2, Edit } from 'lucide-react';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { useState } from 'react';
-import { Search, Plus, Building2, User, RefreshCw, Trash2, Edit } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AppLayout from '@/layouts/app-layout';
+import type {BreadcrumbItem} from '@/types';
 
 export default function Index({ customers, filters }: { customers: any, filters: any }) {
     const breadcrumbs: BreadcrumbItem[] = [
@@ -25,6 +26,12 @@ export default function Index({ customers, filters }: { customers: any, filters:
         setSearch('');
         setType('');
         router.get('/customers');
+    };
+
+    const handleTabChange = (value: string) => {
+        const newType = value === 'all' ? '' : value;
+        setType(newType);
+        router.get('/customers', { search, type: newType }, { preserveState: true });
     };
 
     const toggleStatus = (id: number) => {
@@ -56,39 +63,33 @@ export default function Index({ customers, filters }: { customers: any, filters:
                     </Link>
                 </div>
 
-                <div className="bg-card rounded-xl border shadow-sm p-4">
-                    <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 items-end">
-                        <div className="w-full md:w-1/3">
-                            <label className="text-sm font-medium mb-1 block">Arama</label>
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input 
-                                    placeholder="Cari adı, telefon veya vergi no..." 
-                                    className="pl-9"
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
-                                />
+                <Tabs value={type || 'all'} onValueChange={handleTabChange} className="w-full">
+                    <TabsList className="grid w-full md:w-[400px] grid-cols-3 mb-2">
+                        <TabsTrigger value="all">Tümü</TabsTrigger>
+                        <TabsTrigger value="customer">Müşteriler</TabsTrigger>
+                        <TabsTrigger value="supplier">Tedarikçiler</TabsTrigger>
+                    </TabsList>
+
+                    <div className="bg-card rounded-xl border shadow-sm p-4 mb-4">
+                        <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 items-end">
+                            <div className="w-full md:flex-1">
+                                <label className="text-sm font-medium mb-1 block">Arama</label>
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                    <Input 
+                                        placeholder="Cari adı, telefon veya vergi no..." 
+                                        className="pl-9"
+                                        value={search}
+                                        onChange={e => setSearch(e.target.value)}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="w-full md:w-1/4">
-                            <label className="text-sm font-medium mb-1 block">Cari Tipi</label>
-                            <select 
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                                value={type}
-                                onChange={e => setType(e.target.value)}
-                            >
-                                <option value="">Tümü</option>
-                                <option value="customer">Müşteri</option>
-                                <option value="supplier">Tedarikçi</option>
-                                <option value="both">Her İkisi</option>
-                            </select>
-                        </div>
-                        <div className="flex gap-2 w-full md:w-auto">
-                            <Button type="submit">Filtrele</Button>
-                            <Button type="button" variant="outline" onClick={handleReset}>Temizle</Button>
-                        </div>
-                    </form>
-                </div>
+                            <div className="flex gap-2 w-full md:w-auto">
+                                <Button type="submit">Ara</Button>
+                                <Button type="button" variant="outline" onClick={handleReset}>Temizle</Button>
+                            </div>
+                        </form>
+                    </div>
 
                 <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
@@ -180,6 +181,7 @@ export default function Index({ customers, filters }: { customers: any, filters:
                         </div>
                     )}
                 </div>
+                </Tabs>
             </div>
         </AppLayout>
     );

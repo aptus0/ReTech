@@ -1,13 +1,13 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Edit, Trash2, Plus, MoreVertical, Search, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/app-layout';
 
 export default function Index({ registers, filters }: { registers: any, filters: any }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,7 +69,9 @@ export default function Index({ registers, filters }: { registers: any, filters:
             destroy(`/cash-registers/${id}`, {
                 onSuccess: () => toast.success('Kasa silindi.'),
                 onError: (err) => {
-                    if (err[0]) toast.error(err[0]);
+                    if (err[0]) {
+toast.error(err[0]);
+}
                 }
             });
         }
@@ -126,7 +128,7 @@ export default function Index({ registers, filters }: { registers: any, filters:
                                         <td className="px-6 py-3 font-semibold">{register.name}</td>
                                         <td className="px-6 py-3 text-muted-foreground">{register.currency}</td>
                                         <td className="px-6 py-3 text-right font-bold font-mono">
-                                            {Number(register.balance || 0).toLocaleString('tr-TR', { style: 'currency', currency: register.currency || 'TRY' })}
+                                            {Number(register.current_balance || 0).toLocaleString('tr-TR', { style: 'currency', currency: register.currency || 'TRY' })}
                                         </td>
                                         <td className="px-6 py-3 text-center">
                                             {register.is_active ? 

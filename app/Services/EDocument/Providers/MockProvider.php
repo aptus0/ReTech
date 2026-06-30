@@ -21,7 +21,7 @@ class MockProvider implements EDocumentProviderInterface
         // Simulate network delay
         sleep(1);
 
-        if (!$this->setting->gib_user_code || !$this->setting->gib_password) {
+        if (! $this->setting->gib_user_code || ! $this->setting->gib_password) {
             return [
                 'success' => false,
                 'message' => 'GİB Kullanıcı Kodu veya Şifre eksik.',
@@ -38,7 +38,7 @@ class MockProvider implements EDocumentProviderInterface
     {
         $uuid = (string) Str::uuid();
         $prefix = $this->setting->invoice_prefix ?: 'GIB';
-        $number = $prefix . date('Y') . str_pad(rand(1, 99999), 9, '0', STR_PAD_LEFT);
+        $number = $prefix.date('Y').str_pad(rand(1, 99999), 9, '0', STR_PAD_LEFT);
 
         return [
             'success' => true,

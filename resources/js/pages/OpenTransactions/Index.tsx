@@ -1,40 +1,44 @@
 import { Head, Link, useForm, router } from '@inertiajs/react';
+import { MoreVertical, Phone, FileText, CheckCircle, Clock, Banknote, Search } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MoreVertical, Phone, FileText, CheckCircle, Clock, Banknote } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import AppLayout from '@/layouts/app-layout';
-import InputError from '@/components/input-error';
-import { useState } from 'react';
-import { toast } from 'sonner';
 
-export default function Index({ transactions, registers, filters }: { transactions: any, registers: any[], filters: any }) {
+export default function Index({ transactions, registers, paymentMethods, filters }: { transactions: any, registers: any[], paymentMethods: any[], filters: any }) {
     const [selectedTx, setSelectedTx] = useState<any>(null);
     const [isCollectOpen, setIsCollectOpen] = useState(false);
-
-    const { data: searchData, setData: setSearchData, get } = useForm({
-        search: filters?.search || '',
-    });
+    const [searchTerm, setSearchTerm] = useState(filters?.search || '');
 
     const { data: collectData, setData: setCollectData, post, processing, errors, reset } = useForm({
         amount: 0,
-        register_id: registers.length > 0 ? registers[0].id : '',
+        register_id: registers.length > 0 ? String(registers[0].id) : '',
+        payment_method_id: paymentMethods?.length > 0 ? String(paymentMethods[0].id) : '',
         description: ''
     });
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        get('/open-transactions', { preserveState: true });
-    };
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            if (searchTerm !== (filters?.search || '')) {
+                router.get('/open-transactions', { search: searchTerm }, { preserveState: true, replace: true });
+            }
+        }, 300);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchTerm]);
 
     const openCollect = (tx: any) => {
         setSelectedTx(tx);
         setCollectData({
             amount: tx.remaining_amount,
-            register_id: registers.length > 0 ? registers[0].id : '',
+            register_id: registers.length > 0 ? String(registers[0].id) : '',
+            payment_method_id: paymentMethods?.length > 0 ? String(paymentMethods[0].id) : '',
             description: 'Tahsilat'
         });
         setIsCollectOpen(true);
@@ -42,7 +46,10 @@ export default function Index({ transactions, registers, filters }: { transactio
 
     const submitCollect = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedTx) return;
+
+        if (!selectedTx) {
+return;
+}
 
         post(`/open-transactions/${selectedTx.id}/collect`, {
             onSuccess: () => {
@@ -54,21 +61,50 @@ export default function Index({ transactions, registers, filters }: { transactio
     };
 
     const getRowStyle = (tx: any) => {
-        if (tx.status === 'paid') return 'bg-green-50 dark:bg-green-950/20';
-        if (tx.status === 'overdue') return 'bg-red-50 dark:bg-red-950/20';
+        if (tx.status === 'paid') {
+return 'bg-green-50 dark:bg-green-950/20';
+}
+
+        if (tx.status === 'overdue') {
+return 'bg-red-50 dark:bg-red-950/20';
+}
+
         const daysToDue = (new Date(tx.due_date).getTime() - new Date().getTime()) / (1000 * 3600 * 24);
-        if (daysToDue <= 0) return 'bg-orange-50 dark:bg-orange-950/20';
-        if (daysToDue <= 3) return 'bg-yellow-50 dark:bg-yellow-950/20';
+
+        if (daysToDue <= 0) {
+return 'bg-orange-50 dark:bg-orange-950/20';
+}
+
+        if (daysToDue <= 3) {
+return 'bg-yellow-50 dark:bg-yellow-950/20';
+}
+
         return '';
     };
 
     const getStatusBadge = (tx: any) => {
-        if (tx.status === 'paid') return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Ödendi</Badge>;
-        if (tx.status === 'overdue') return <Badge className="bg-red-100 text-red-700 hover:bg-red-100 border-red-200">Gecikmiş</Badge>;
-        if (tx.status === 'partial') return <Badge variant="outline" className="text-blue-600 border-blue-200">Kısmi Ödendi</Badge>;
+        if (tx.status === 'paid') {
+return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Ödendi</Badge>;
+}
+
+        if (tx.status === 'overdue') {
+return <Badge className="bg-red-100 text-red-700 hover:bg-red-100 border-red-200">Gecikmiş</Badge>;
+}
+
+        if (tx.status === 'partial') {
+return <Badge variant="outline" className="text-blue-600 border-blue-200">Kısmi Ödendi</Badge>;
+}
+
         const daysToDue = Math.ceil((new Date(tx.due_date).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
-        if (daysToDue === 0) return <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100">Bugün</Badge>;
-        if (daysToDue > 0 && daysToDue <= 3) return <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100">Yaklaşıyor</Badge>;
+
+        if (daysToDue === 0) {
+return <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100">Bugün</Badge>;
+}
+
+        if (daysToDue > 0 && daysToDue <= 3) {
+return <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100">Yaklaşıyor</Badge>;
+}
+
         return <Badge variant="secondary">Açık</Badge>;
     };
 
@@ -81,18 +117,18 @@ export default function Index({ transactions, registers, filters }: { transactio
                 </div>
 
                 <div className="flex items-center justify-between gap-4 rounded-sm border bg-card p-4 shadow-sm">
-                    <form onSubmit={handleSearch} className="flex flex-1 items-center gap-4">
+                    <div className="flex flex-1 items-center gap-4 relative">
+                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input 
                             placeholder="Müşteri/Cari Adı Ara..." 
-                            value={searchData.search} 
-                            onChange={e => setSearchData('search', e.target.value)} 
-                            className="max-w-md"
+                            value={searchTerm} 
+                            onChange={e => setSearchTerm(e.target.value)} 
+                            className="max-w-md pl-9"
                         />
-                        <Button type="submit" variant="secondary">Ara</Button>
-                    </form>
+                    </div>
                 </div>
 
-                <div className="rounded-sm border bg-card shadow-sm overflow-hidden">
+                <div className="rounded-sm border bg-card shadow-sm overflow-hidden flex-1">
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm text-left text-card-foreground">
                             <thead className="text-[11px] uppercase bg-neutral-50 dark:bg-neutral-900/50 text-neutral-500 border-b">
@@ -133,16 +169,18 @@ export default function Index({ transactions, registers, filters }: { transactio
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     {tx.status !== 'paid' && (
-                                                        <DropdownMenuItem onClick={() => openCollect(tx)} className="font-medium text-orange-600">
+                                                        <DropdownMenuItem onClick={() => openCollect(tx)} className="font-medium text-orange-600 cursor-pointer">
                                                             <Banknote className="w-4 h-4 mr-2" /> Tahsilat / Ödeme
                                                         </DropdownMenuItem>
                                                     )}
-                                                    <DropdownMenuItem>
+                                                    <DropdownMenuItem className="cursor-pointer" onClick={() => toast.success('Müşteri ile iletişim kuruldu olarak işaretlendi.')}>
                                                         <Phone className="w-4 h-4 mr-2" /> Arandı İşaretle
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem>
-                                                        <FileText className="w-4 h-4 mr-2" /> Faturayı Gör
-                                                    </DropdownMenuItem>
+                                                    <Link href={`/e-documents`}>
+                                                        <DropdownMenuItem className="cursor-pointer">
+                                                            <FileText className="w-4 h-4 mr-2" /> Faturayı Gör
+                                                        </DropdownMenuItem>
+                                                    </Link>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </td>
@@ -161,7 +199,7 @@ export default function Index({ transactions, registers, filters }: { transactio
 
             {/* Tahsilat Drawer */}
             <Sheet open={isCollectOpen} onOpenChange={setIsCollectOpen}>
-                <SheetContent side="right">
+                <SheetContent side="right" className="w-[90vw] sm:max-w-2xl overflow-y-auto">
                     <SheetHeader className="mb-6">
                         <SheetTitle>{selectedTx?.type === 'receivable' ? 'Tahsilat Al' : 'Ödeme Yap'}</SheetTitle>
                     </SheetHeader>
@@ -181,18 +219,33 @@ export default function Index({ transactions, registers, filters }: { transactio
                             />
                             <InputError message={errors.amount} />
                         </div>
-                        <div className="space-y-2">
-                            <Label>Kasa Seçimi *</Label>
-                            <select 
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                value={collectData.register_id}
-                                onChange={e => setCollectData('register_id', e.target.value)}
-                                required
-                            >
-                                <option value="">Seçiniz...</option>
-                                {registers.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-                            </select>
-                            <InputError message={errors.register_id} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Kasa Seçimi *</Label>
+                                <select 
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={collectData.register_id}
+                                    onChange={e => setCollectData('register_id', e.target.value)}
+                                    required
+                                >
+                                    <option value="">Seçiniz...</option>
+                                    {registers?.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                                </select>
+                                <InputError message={errors.register_id} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Ödeme Yöntemi *</Label>
+                                <select 
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={collectData.payment_method_id}
+                                    onChange={e => setCollectData('payment_method_id', e.target.value)}
+                                    required
+                                >
+                                    <option value="">Seçiniz...</option>
+                                    {paymentMethods?.map((pm: any) => <option key={pm.id} value={pm.id}>{pm.name}</option>)}
+                                </select>
+                                <InputError message={(errors as any).payment_method_id} />
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <Label>Açıklama</Label>

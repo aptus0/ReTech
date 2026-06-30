@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PaymentMethod;
 use App\Http\Requests\StorePaymentMethodRequest;
 use App\Http\Requests\UpdatePaymentMethodRequest;
+use App\Models\CashMovement;
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 
 class PaymentMethodController extends Controller
@@ -33,7 +34,7 @@ class PaymentMethodController extends Controller
     public function edit(PaymentMethod $paymentMethod)
     {
         return inertia('Finance/PaymentMethods/Edit', [
-            'method' => $paymentMethod
+            'method' => $paymentMethod,
         ]);
     }
 
@@ -47,10 +48,10 @@ class PaymentMethodController extends Controller
     public function destroy(PaymentMethod $paymentMethod)
     {
         // Don't delete if used in cash movements
-        if (\App\Models\CashMovement::where('payment_method_id', $paymentMethod->id)->exists()) {
+        if (CashMovement::where('payment_method_id', $paymentMethod->id)->exists()) {
             return redirect()->back()->withErrors('Bu ödeme tipi hareketlerde kullanıldığı için silinemez.');
         }
-        
+
         $paymentMethod->delete();
 
         return redirect()->route('payment-methods.index')->with('success', 'Ödeme tipi silindi.');

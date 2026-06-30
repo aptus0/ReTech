@@ -10,17 +10,17 @@ class UnitController extends Controller
     public function index(Request $request)
     {
         $query = Unit::query();
-        
+
         if ($search = $request->input('search')) {
             $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('short_name', 'like', "%{$search}%");
+                ->orWhere('short_name', 'like', "%{$search}%");
         }
 
         $units = $query->orderBy('name')->paginate(15);
 
         return inertia('Units/Index', [
             'units' => $units,
-            'filters' => $request->only('search')
+            'filters' => $request->only('search'),
         ]);
     }
 
@@ -29,7 +29,7 @@ class UnitController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'short_name' => 'required|string|max:50',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         Unit::create($validated);
@@ -42,7 +42,7 @@ class UnitController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'short_name' => 'required|string|max:50',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         $unit->update($validated);
@@ -52,8 +52,14 @@ class UnitController extends Controller
 
     public function destroy(Unit $unit)
     {
-        $unit->delete();
-        
-        return redirect()->back()->with('success', 'Birim silindi.');
+        try {
+            $unit->delete();
+            return redirect()->back()->with('success', 'Birim silindi.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return redirect()->back()->withErrors(['error' => 'Bu birim ürünlerde kullanıldığı için silinemez.']);
+            }
+            return redirect()->back()->withErrors(['error' => 'Birim silinirken bir hata oluştu.']);
+        }
     }
 }

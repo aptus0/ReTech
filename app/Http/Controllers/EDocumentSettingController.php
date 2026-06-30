@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\EDocumentSetting;
+use App\Services\EDocument\EDocumentManager;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -33,7 +34,7 @@ class EDocumentSettingController extends Controller
                 'tax_office' => $setting->tax_office,
                 'gib_user_code' => $setting->gib_user_code,
                 // We send a boolean to indicate if password exists, rather than sending the plain/encrypted password to the frontend
-                'has_gib_password' => !empty($setting->gib_password_encrypted),
+                'has_gib_password' => ! empty($setting->gib_password_encrypted),
                 'e_invoice_enabled' => $setting->e_invoice_enabled,
                 'e_archive_enabled' => $setting->e_archive_enabled,
                 'default_document_type' => $setting->default_document_type,
@@ -41,7 +42,7 @@ class EDocumentSettingController extends Controller
                 'invoice_start_no' => $setting->invoice_start_no,
                 'last_invoice_no' => $setting->last_invoice_no,
                 'auto_send_after_sale' => $setting->auto_send_after_sale,
-            ]
+            ],
         ]);
     }
 
@@ -66,8 +67,8 @@ class EDocumentSettingController extends Controller
 
         $setting = EDocumentSetting::first();
 
-        if (!$setting) {
-            $setting = new EDocumentSetting();
+        if (! $setting) {
+            $setting = new EDocumentSetting;
         }
 
         // Exclude gib_password from massive assignment if empty and already exists
@@ -89,14 +90,14 @@ class EDocumentSettingController extends Controller
     public function testConnection()
     {
         try {
-            $manager = app(\App\Services\EDocument\EDocumentManager::class);
+            $manager = app(EDocumentManager::class);
             $result = $manager->provider()->testConnection();
-            
+
             return response()->json($result);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ]);
         }
     }

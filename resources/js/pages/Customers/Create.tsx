@@ -1,11 +1,11 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import InputError from '@/components/input-error';
+import AppLayout from '@/layouts/app-layout';
+import type {BreadcrumbItem} from '@/types';
 
 export default function Create() {
     const breadcrumbs: BreadcrumbItem[] = [

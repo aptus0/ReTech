@@ -1,4 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
+import { useState } from 'react';
 import InputError from '@/components/input-error';
 import PasskeyVerify from '@/components/passkey-verify';
 import PasswordInput from '@/components/password-input';
@@ -8,9 +9,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+
 
 type Props = {
     status?: string;
@@ -18,6 +19,8 @@ type Props = {
 };
 
 export default function Login({ status, canResetPassword }: Props) {
+    const [loginType, setLoginType] = useState<'personnel' | 'admin'>('personnel');
+
     return (
         <>
             <Head title="Giriş Yap" />
@@ -31,21 +34,70 @@ export default function Login({ status, canResetPassword }: Props) {
             >
                 {({ processing, errors }) => (
                     <>
+                        <div className="flex gap-4 mb-2">
+                            <Button 
+                                type="button" 
+                                variant={loginType === 'personnel' ? 'default' : 'outline'} 
+                                onClick={() => setLoginType('personnel')}
+                                className="flex-1"
+                            >
+                                Personel Girişi
+                            </Button>
+                            <Button 
+                                type="button" 
+                                variant={loginType === 'admin' ? 'default' : 'outline'} 
+                                onClick={() => setLoginType('admin')}
+                                className="flex-1"
+                            >
+                                Admin Girişi
+                            </Button>
+                        </div>
+
                         <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">E-posta adresi</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="ornek@karaca.com"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
+                            {loginType === 'admin' ? (
+                                <div className="grid gap-2">
+                                    <Label htmlFor="email">E-posta adresi</Label>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        name="email"
+                                        required
+                                        autoFocus
+                                        tabIndex={1}
+                                        autoComplete="email"
+                                        placeholder="admin@retech.com"
+                                    />
+                                    <InputError message={errors.email} />
+                                </div>
+                            ) : (
+                                <div className="grid gap-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="store_code">Mağaza Kodu</Label>
+                                        <Input
+                                            id="store_code"
+                                            type="text"
+                                            name="store_code"
+                                            required
+                                            autoFocus
+                                            tabIndex={1}
+                                            placeholder="Örn: MGZ-01"
+                                        />
+                                        <InputError message={errors.store_code} />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="personnel_no">Personel No</Label>
+                                        <Input
+                                            id="personnel_no"
+                                            type="text"
+                                            name="personnel_no"
+                                            required
+                                            tabIndex={2}
+                                            placeholder="Örn: 10045"
+                                        />
+                                        <InputError message={errors.personnel_no} />
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
@@ -64,7 +116,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                     id="password"
                                     name="password"
                                     required
-                                    tabIndex={2}
+                                    tabIndex={3}
                                     autoComplete="current-password"
                                     placeholder="Parola"
                                 />
@@ -92,12 +144,6 @@ export default function Login({ status, canResetPassword }: Props) {
                             </Button>
                         </div>
 
-                        <div className="text-center text-sm text-muted-foreground">
-                            Hesabınız yok mu?{' '}
-                            <TextLink href={register()} tabIndex={5}>
-                                Kayıt Ol
-                            </TextLink>
-                        </div>
                     </>
                 )}
             </Form>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
+use App\Http\Controllers\Settings\StoreSettingsController;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
 
@@ -23,10 +24,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('throttle:6,1')
         ->name('user-password.update');
 
-    Route::get('settings/store', [\App\Http\Controllers\Settings\StoreSettingsController::class, 'edit'])->name('settings.store');
-    Route::post('settings/store', [\App\Http\Controllers\Settings\StoreSettingsController::class, 'update'])->name('settings.store.update');
+    Route::get('settings/store', [StoreSettingsController::class, 'edit'])->name('settings.store');
+    Route::post('settings/store', [StoreSettingsController::class, 'update'])->name('settings.store.update');
 
     Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
+    Route::inertia('settings/display', 'settings/display')->name('settings.display');
+    Route::inertia('settings/marketplaces', 'settings/marketplaces')->name('settings.marketplaces');
+
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::resource('users', \App\Http\Controllers\UserController::class)->except(['show']);
+        Route::get('mobile-app', [\App\Http\Controllers\Settings\MobileAppController::class, 'index'])->name('mobile-app');
+    });
 });
 
 Route::get('.well-known/passkey-endpoints', function () {

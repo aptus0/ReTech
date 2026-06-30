@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid, Box, Users, ShoppingCart, Tags, Ruler, FileText } from 'lucide-react';
+import { BookOpen, FolderGit2, LayoutGrid, Box, Users, ShoppingCart, Tags, Ruler, FileText, UserCog, Zap } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -21,6 +21,23 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Hızlı İşlemler',
+        href: '#',
+        icon: Zap,
+        isActive: false,
+        items: [
+            { title: 'Yeni Satış / Fatura', href: '/sales-flow' },
+            { title: 'Hızlı Barkod Yazdır', href: '/products/barcode-print/quick' },
+            { title: 'Yeni Ürün Ekle', href: '/products/create' },
+            { title: 'Yeni Cari Ekle', href: '/customers/create' },
+        ],
+    },
+    {
+        title: 'Kullanıcılar',
+        href: '/users',
+        icon: UserCog,
     },
     {
         title: 'Cari Yönetimi',

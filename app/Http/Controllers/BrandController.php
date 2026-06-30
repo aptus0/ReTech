@@ -12,7 +12,7 @@ class BrandController extends Controller
     public function index(Request $request)
     {
         $query = Brand::query();
-        
+
         if ($search = $request->input('search')) {
             $query->where('name', 'like', "%{$search}%");
         }
@@ -21,7 +21,7 @@ class BrandController extends Controller
 
         return inertia('Brands/Index', [
             'brands' => $brands,
-            'filters' => $request->only('search')
+            'filters' => $request->only('search'),
         ]);
     }
 
@@ -31,7 +31,7 @@ class BrandController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
-            'image' => 'nullable|image|max:2048'
+            'image' => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -51,7 +51,7 @@ class BrandController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
-            'image' => 'nullable|image|max:2048'
+            'image' => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -72,11 +72,18 @@ class BrandController extends Controller
 
     public function destroy(Brand $brand)
     {
-        if ($brand->image) {
-            Storage::disk('public')->delete($brand->image);
+        try {
+            if ($brand->image) {
+                Storage::disk('public')->delete($brand->image);
+            }
+            $brand->delete();
+
+            return redirect()->back()->with('success', 'Marka silindi.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return redirect()->back()->withErrors(['error' => 'Bu marka ürünlerde kullanıldığı için silinemez.']);
+            }
+            return redirect()->back()->withErrors(['error' => 'Marka silinirken bir hata oluştu.']);
         }
-        $brand->delete();
-        
-        return redirect()->back()->with('success', 'Marka silindi.');
     }
 }

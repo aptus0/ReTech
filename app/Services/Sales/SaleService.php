@@ -2,14 +2,14 @@
 
 namespace App\Services\Sales;
 
+use App\Models\CashMovement;
+use App\Models\CashRegister;
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\OpenTransaction;
 use App\Models\Product;
 use App\Models\StockMovement;
-use App\Models\CashMovement;
-use App\Models\OpenTransaction;
-use App\Models\Customer;
-use App\Models\CashRegister;
 use Illuminate\Support\Facades\DB;
 
 class SaleService
@@ -18,12 +18,12 @@ class SaleService
     {
         return DB::transaction(function () use ($data) {
             $user_id = auth()->id();
-            
+
             // 1. Fatura Başlığı (Invoice) Oluştur
             $invoice = Invoice::create([
                 'customer_id' => $data['customer_id'] ?? null,
                 'type' => 'sale',
-                'invoice_number' => 'INV-' . strtoupper(uniqid()),
+                'invoice_number' => 'INV-'.strtoupper(uniqid()),
                 'issue_date' => now(),
                 'due_date' => $data['due_date'] ?? null,
                 'subtotal' => $data['subtotal'],
@@ -52,7 +52,7 @@ class SaleService
                 ]);
 
                 // Stok Düşüşü
-                if (!empty($item['product_id'])) {
+                if (! empty($item['product_id'])) {
                     $product = Product::find($item['product_id']);
                     if ($product) {
                         StockMovement::create([
@@ -62,10 +62,10 @@ class SaleService
                             'unit_price' => $item['unit_price'],
                             'document_type' => 'sale',
                             'document_no' => $invoice->invoice_number,
-                            'description' => "Satış Çıkışı - Fatura: " . $invoice->invoice_number,
+                            'description' => 'Satış Çıkışı - Fatura: '.$invoice->invoice_number,
                             'user_id' => $user_id,
                         ]);
-                        
+
                         $product->decrement('current_stock', $item['quantity']);
                     }
                 }
@@ -95,7 +95,7 @@ class SaleService
                         'movement_date' => now(),
                         'source_type' => 'invoice',
                         'source_id' => $invoice->id,
-                        'description' => 'Peşin Satış Tahsilatı - ' . $invoice->invoice_number,
+                        'description' => 'Peşin Satış Tahsilatı - '.$invoice->invoice_number,
                         'created_by' => $user_id,
                     ]);
 
@@ -114,7 +114,7 @@ class SaleService
 
             // Vadeli (Açık İşlem) oluşacak tutar hesaplaması
             $remainingAmount = $data['grand_total'] - $cashAmount;
-            
+
             if ($remainingAmount > 0 && $data['customer_id']) {
                 OpenTransaction::create([
                     'account_id' => $data['customer_id'],

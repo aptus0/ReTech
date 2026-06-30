@@ -1,18 +1,18 @@
 import { Head, Link, useForm, router } from '@inertiajs/react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChevronDown, Plus, Trash2, Printer, Image as ImageIcon } from 'lucide-react';
-import AppLayout from '@/layouts/app-layout';
-import InputError from '@/components/input-error';
-import type {BreadcrumbItem} from '@/types';
 import { useState, useRef } from 'react';
 import { toast } from 'sonner';
+import InputError from '@/components/input-error';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from '@/components/ui/sheet';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import AppLayout from '@/layouts/app-layout';
+import type {BreadcrumbItem} from '@/types';
 
 export default function Index({ products, filters, categories, brands, units }: { products: any, filters: any, categories: any[], brands: any[], units: any[] }) {
     const breadcrumbs: BreadcrumbItem[] = [
@@ -59,8 +59,26 @@ export default function Index({ products, filters, categories, brands, units }: 
         }
     };
 
+    const handleBulkDelete = () => {
+        if (!confirm('Seçili ürünleri silmek istediğinize emin misiniz?')) return;
+        
+        router.delete('/products/bulk-delete', {
+            data: { ids: selectedIds },
+            onSuccess: () => {
+                setSelectedIds([]);
+                toast.success('Seçili ürünler silindi.');
+            }
+        });
+    };
+
+    const handleBulkBarcode = () => {
+        if (selectedIds.length === 0) return;
+        router.get('/products/barcode-print', { ids: selectedIds.join(',') });
+    };
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setFormData('image', file);
             const reader = new FileReader();
@@ -88,20 +106,21 @@ export default function Index({ products, filters, categories, brands, units }: 
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Stok Kartları</h1>
                     
-                    <Dialog open={isCreateOpen} onOpenChange={(open) => {
+                    <Sheet open={isCreateOpen} onOpenChange={(open) => {
                         setIsCreateOpen(open);
+
                         if (!open) {
                             reset();
                             setImagePreview(null);
                         }
                     }}>
-                        <DialogTrigger asChild>
+                        <SheetTrigger asChild>
                             <Button className="font-bold uppercase tracking-wider text-xs bg-orange-600 hover:bg-orange-700"><Plus className="w-4 h-4 mr-2" /> Yeni Ürün Ekle</Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-                            <DialogHeader className="border-b pb-4 mb-4">
-                                <DialogTitle className="text-xl">Yeni Stok Kartı Oluştur</DialogTitle>
-                            </DialogHeader>
+                        </SheetTrigger>
+                        <SheetContent side="right" className="w-[400px] sm:w-[540px] md:w-[700px] lg:w-[1000px] xl:w-[1200px] overflow-y-auto sm:max-w-none">
+                            <SheetHeader className="border-b pb-4 mb-4">
+                                <SheetTitle className="text-xl">Yeni Stok Kartı Oluştur</SheetTitle>
+                            </SheetHeader>
                             <form onSubmit={submitCreate} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     {/* Sol Taraf: Görsel */}
@@ -235,13 +254,13 @@ export default function Index({ products, filters, categories, brands, units }: 
                                     </div>
                                 </div>
 
-                                <DialogFooter className="pt-4 mt-6">
+                                <SheetFooter className="pt-4 mt-6">
                                     <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>İptal</Button>
                                     <Button type="submit" disabled={processing} className="bg-orange-600 hover:bg-orange-700 px-8">Stok Kartını Kaydet</Button>
-                                </DialogFooter>
+                                </SheetFooter>
                             </form>
-                        </DialogContent>
-                    </Dialog>
+                        </SheetContent>
+                    </Sheet>
                 </div>
 
                 <div className="flex items-center justify-between gap-4 rounded-sm border bg-card p-4 shadow-sm">
@@ -263,10 +282,10 @@ export default function Index({ products, filters, categories, brands, units }: 
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem className="text-red-600">
+                                <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={handleBulkDelete}>
                                     <Trash2 className="w-4 h-4 mr-2" /> Seçilenleri Sil
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem className="cursor-pointer" onClick={handleBulkBarcode}>
                                     <Printer className="w-4 h-4 mr-2" /> Barkod Bas
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

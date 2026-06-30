@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CalendarEvent;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\StockMovement;
@@ -20,7 +21,7 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        $calendarEvents = \App\Models\CalendarEvent::where('user_id', auth()->id())->get();
+        $calendarEvents = CalendarEvent::where('user_id', auth()->id())->get();
 
         return inertia('dashboard', [
             'stats' => [

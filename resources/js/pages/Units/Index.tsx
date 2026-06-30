@@ -1,13 +1,13 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Edit, Trash2, Plus, MoreVertical, Search, Ruler } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/app-layout';
 
 export default function Index({ units, filters }: { units: any, filters: any }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -128,19 +128,14 @@ export default function Index({ units, filters }: { units: any, filters: any }) 
                                             }
                                         </td>
                                         <td className="px-6 py-3 text-right">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity"><MoreVertical className="w-4 h-4" /></Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem onClick={() => openEditModal(unit)}>
-                                                        <Edit className="w-4 h-4 mr-2" /> Düzenle
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleDelete(unit.id)} className="text-red-600">
-                                                        <Trash2 className="w-4 h-4 mr-2" /> Sil
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <Button variant="ghost" size="sm" onClick={() => openEditModal(unit)} className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                                                    <Edit className="w-4 h-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="sm" onClick={() => handleDelete(unit.id)} className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

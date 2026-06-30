@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\BarcodeSchema;
-use App\Models\BarcodeSchemaItem;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,8 +11,9 @@ class BarcodeSchemaController extends Controller
     public function index()
     {
         $schemas = BarcodeSchema::with('items')->orderBy('created_at', 'desc')->get();
+
         return Inertia::render('BarcodeSchemas/Index', [
-            'schemas' => $schemas
+            'schemas' => $schemas,
         ]);
     }
 
@@ -21,6 +21,7 @@ class BarcodeSchemaController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'company_name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'printer_language' => 'required|string',
             'label_width_mm' => 'required|numeric',
@@ -35,7 +36,7 @@ class BarcodeSchemaController extends Controller
             'items' => 'nullable|array',
         ]);
 
-        if (!empty($validated['is_default'])) {
+        if (! empty($validated['is_default'])) {
             BarcodeSchema::where('id', '>', 0)->update(['is_default' => false]);
         }
 
@@ -55,6 +56,7 @@ class BarcodeSchemaController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'company_name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'printer_language' => 'required|string',
             'label_width_mm' => 'required|numeric',
@@ -69,7 +71,7 @@ class BarcodeSchemaController extends Controller
             'items' => 'nullable|array',
         ]);
 
-        if (!empty($validated['is_default'])) {
+        if (! empty($validated['is_default'])) {
             BarcodeSchema::where('id', '!=', $barcodeSchema->id)->update(['is_default' => false]);
         }
 
@@ -90,6 +92,7 @@ class BarcodeSchemaController extends Controller
     public function destroy(BarcodeSchema $barcodeSchema)
     {
         $barcodeSchema->delete();
+
         return back()->with('success', 'Barkod şeması silindi.');
     }
 }

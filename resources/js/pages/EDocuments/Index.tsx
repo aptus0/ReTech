@@ -1,17 +1,19 @@
 import { Head, Link, useForm, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Send, RefreshCw, MoreVertical, Search, FileText, CheckCircle2, AlertTriangle, FileSignature } from 'lucide-react';
+import { Send, RefreshCw, MoreVertical, Search, FileText, CheckCircle2, AlertTriangle, FileSignature, Printer, Download } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import AppLayout from '@/layouts/app-layout';
 
 export default function Index({ invoices, filters, stats }: { invoices: any, filters: any, stats: any }) {
     const [processingIds, setProcessingIds] = useState<number[]>([]);
+    const [previewInvoice, setPreviewInvoice] = useState<any>(null);
 
     const { data: searchData, setData: setSearchData, get } = useForm({
         search: filters?.search || '',
@@ -84,11 +86,11 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
         <AppLayout breadcrumbs={[{ title: 'e-Belge Yönetimi', href: '/e-documents' }]}>
             <Head title="e-Belge (GİB) Yönetimi" />
 
-            <div className="flex h-full flex-1 flex-col gap-6 p-4">
+            <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-semibold">e-Fatura / e-Arşiv Yönetimi</h1>
-                        <p className="text-sm text-muted-foreground mt-1">Kesilen faturaları GİB'e gönderin ve durumlarını takip edin.</p>
+                        <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">e-Fatura / e-Arşiv Yönetimi</h1>
+                        <p className="text-muted-foreground mt-1">Kesilen faturaları GİB'e gönderin ve durumlarını takip edin.</p>
                     </div>
                 </div>
 
@@ -125,7 +127,7 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                     </Card>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 rounded-sm border bg-card p-4 shadow-sm">
+                <div className="flex items-center justify-between gap-4 rounded-xl border bg-card p-4 shadow-sm">
                     <form onSubmit={handleSearch} className="flex flex-1 items-center gap-4">
                         <div className="relative w-full max-w-md">
                             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -133,11 +135,11 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                                 placeholder="ERP Fatura No, GİB No veya Cari Ara..." 
                                 value={searchData.search} 
                                 onChange={e => setSearchData('search', e.target.value)} 
-                                className="pl-9"
+                                className="pl-9 h-11"
                             />
                         </div>
                         <Select value={searchData.status} onValueChange={handleStatusFilter}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-[180px] h-11">
                                 <SelectValue placeholder="Tüm Durumlar" />
                             </SelectTrigger>
                             <SelectContent>
@@ -148,11 +150,11 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                                 <SelectItem value="failed">Hatalı</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button type="submit" variant="secondary">Filtrele</Button>
+                        <Button type="submit" variant="secondary" className="h-11 px-6">Filtrele</Button>
                     </form>
                 </div>
 
-                <div className="rounded-sm border bg-card shadow-sm overflow-hidden flex-1">
+                <div className="rounded-xl border bg-card shadow-sm overflow-hidden flex-1">
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm text-left text-card-foreground">
                             <thead className="text-[11px] uppercase bg-neutral-50 dark:bg-neutral-900/50 text-neutral-500 border-b">
@@ -169,7 +171,7 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                             <tbody>
                                 {invoices?.data?.map((invoice: any) => (
                                     <tr key={invoice.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors group">
-                                        <td className="px-6 py-3 font-mono font-semibold text-orange-600">
+                                        <td className="px-6 py-3 font-mono font-semibold text-orange-600 cursor-pointer hover:underline" onClick={() => setPreviewInvoice(invoice)}>
                                             {invoice.invoice_number}
                                         </td>
                                         <td className="px-6 py-3">
@@ -187,7 +189,7 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                                         <td className="px-6 py-3">
                                             {new Date(invoice.issue_date).toLocaleDateString('tr-TR')}
                                         </td>
-                                        <td className="px-6 py-3 text-right font-bold font-mono">
+                                        <td className="px-6 py-3 text-right font-bold font-mono text-base">
                                             ₺{Number(invoice.grand_total).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
                                         </td>
                                         <td className="px-6 py-3 text-center">
@@ -198,7 +200,7 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                                                 {(invoice.e_document_status === 'draft' || invoice.e_document_status === 'failed') && (
                                                     <Button 
                                                         size="sm" 
-                                                        className="bg-orange-600 hover:bg-orange-700 text-xs py-1 h-8"
+                                                        className="bg-orange-600 hover:bg-orange-700 text-xs py-1 h-8 shadow-sm"
                                                         onClick={() => sendToGib(invoice.id)}
                                                         disabled={processingIds.includes(invoice.id)}
                                                     >
@@ -223,9 +225,11 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                                                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><MoreVertical className="w-4 h-4" /></Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem>
-                                                            <FileText className="w-4 h-4 mr-2" /> Fatura Detayı
-                                                        </DropdownMenuItem>
+                                                        <Link href={`/e-documents/${invoice.id}`}>
+                                                            <DropdownMenuItem className="cursor-pointer">
+                                                                <FileText className="w-4 h-4 mr-2" /> Fatura Detayı / PDF
+                                                            </DropdownMenuItem>
+                                                        </Link>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </div>
@@ -234,7 +238,10 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                                 ))}
                                 {(!invoices?.data || invoices.data.length === 0) && (
                                     <tr>
-                                        <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">Gösterilecek fatura bulunamadı.</td>
+                                        <td colSpan={7} className="px-6 py-16 text-center text-muted-foreground flex flex-col items-center justify-center">
+                                            <FileText className="w-12 h-12 mb-4 opacity-20" />
+                                            <span>Gösterilecek e-belge bulunamadı.</span>
+                                        </td>
                                     </tr>
                                 )}
                             </tbody>
@@ -242,6 +249,111 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                     </div>
                 </div>
             </div>
+
+            <Sheet open={!!previewInvoice} onOpenChange={(o) => !o && setPreviewInvoice(null)}>
+                <SheetContent side="right" className="w-full sm:max-w-2xl sm:w-[800px] overflow-y-auto">
+                    <SheetHeader className="mb-6 flex flex-row items-center justify-between border-b pb-4">
+                        <div>
+                            <SheetTitle className="text-2xl font-bold text-orange-600">Fatura Görüntüleyici</SheetTitle>
+                            <p className="text-sm text-muted-foreground">Belge detayları ve görselleştirilmiş UBL formatı.</p>
+                        </div>
+                        <div className="flex gap-2">
+                            <Link href={`/e-documents/${previewInvoice?.id}`}>
+                                <Button className="bg-orange-600 hover:bg-orange-700 text-white" size="sm">
+                                    <FileText className="w-4 h-4 mr-2"/> Tam Ekran & PDF Görüntüle
+                                </Button>
+                            </Link>
+                        </div>
+                    </SheetHeader>
+                    
+                    {previewInvoice && (
+                        <div className="space-y-6">
+                            <div className="bg-white border rounded-xl shadow-sm p-8 font-mono text-sm relative">
+                                <div className="absolute right-8 top-8">
+                                    <div className="border-4 border-double border-neutral-300 p-2 text-center text-neutral-400 font-bold uppercase rotate-12">
+                                        e-{previewInvoice.e_document_status === 'accepted' ? 'FATURA' : 'ARŞİV'}
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-start mb-12">
+                                    <div className="max-w-[50%]">
+                                        <h3 className="text-xl font-bold mb-2">RETECH MAĞAZACILIK A.Ş.</h3>
+                                        <p className="text-neutral-500">Mecidiyeköy Mah. Büyükdere Cad. No:12<br/>Şişli / İSTANBUL<br/>VD: Şişli - 1234567890</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-bold">Fatura No:</p>
+                                        <p className="mb-2 text-orange-600">{previewInvoice.e_document_no || previewInvoice.invoice_number}</p>
+                                        <p className="font-bold">Düzenleme Tarihi:</p>
+                                        <p className="mb-2">{new Date(previewInvoice.issue_date).toLocaleDateString('tr-TR')}</p>
+                                        <p className="font-bold">UUID:</p>
+                                        <p className="text-[10px] break-all w-48 text-right float-right">{previewInvoice.e_document_uuid || 'Oluşturulmadı'}</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="border border-neutral-200 rounded-lg p-4 mb-8 bg-neutral-50">
+                                    <h4 className="font-bold mb-2 border-b pb-2">SAYIN</h4>
+                                    <p className="font-bold text-lg">{previewInvoice.customer?.name || 'Perakende Müşteri'}</p>
+                                    <p>{previewInvoice.customer?.address || 'Türkiye'}</p>
+                                    <p>VD/TCKN: {previewInvoice.customer?.tax_number || '11111111111'}</p>
+                                </div>
+                                
+                                <table className="w-full mb-8">
+                                    <thead className="border-b-2 border-neutral-800">
+                                        <tr>
+                                            <th className="py-2 text-left">Ürün/Hizmet</th>
+                                            <th className="py-2 text-center">Miktar</th>
+                                            <th className="py-2 text-right">B.Fiyat</th>
+                                            <th className="py-2 text-right">KDV</th>
+                                            <th className="py-2 text-right">Tutar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="border-b border-neutral-300">
+                                        {previewInvoice.items && previewInvoice.items.length > 0 ? (
+                                            previewInvoice.items.map((item: any, idx: number) => (
+                                                <tr key={idx}>
+                                                    <td className="py-3">{item.product?.name || item.description || 'Ürün'}</td>
+                                                    <td className="py-3 text-center">{item.quantity} Adet</td>
+                                                    <td className="py-3 text-right">{(item.unit_price).toFixed(2)}</td>
+                                                    <td className="py-3 text-right">%{item.tax_rate || 20}</td>
+                                                    <td className="py-3 text-right">{(item.total).toFixed(2)}</td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td className="py-3">Muhtelif Ürün ve Hizmetler</td>
+                                                <td className="py-3 text-center">1.00 Adet</td>
+                                                <td className="py-3 text-right">{(previewInvoice.grand_total / 1.2).toFixed(2)}</td>
+                                                <td className="py-3 text-right">%20</td>
+                                                <td className="py-3 text-right">{(previewInvoice.grand_total / 1.2).toFixed(2)}</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                                
+                                <div className="flex justify-end">
+                                    <div className="w-64">
+                                        <div className="flex justify-between py-1">
+                                            <span className="font-bold">Mal/Hizmet Toplamı:</span>
+                                            <span>₺{(previewInvoice.grand_total / 1.2).toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex justify-between py-1 border-b">
+                                            <span className="font-bold">Hesaplanan KDV:</span>
+                                            <span>₺{(previewInvoice.grand_total - (previewInvoice.grand_total / 1.2)).toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex justify-between py-2 text-lg">
+                                            <span className="font-black">GENEL TOPLAM:</span>
+                                            <span className="font-black">₺{Number(previewInvoice.grand_total).toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="mt-12 text-center text-xs text-neutral-400">
+                                    <p>Bu e-belge elektronik ortamda oluşturulmuş olup, mali değeri {previewInvoice.e_document_status === 'accepted' ? 'vardır' : 'taslak halindedir'}.</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </SheetContent>
+            </Sheet>
         </AppLayout>
     );
 }

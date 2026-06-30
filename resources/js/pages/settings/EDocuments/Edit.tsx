@@ -1,13 +1,13 @@
 import { Head, useForm, router } from '@inertiajs/react';
+import { Save, ShieldAlert, CheckCircle2, FlaskConical, Link as LinkIcon, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Save, ShieldAlert, CheckCircle2, FlaskConical, Link as LinkIcon, RefreshCw } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
 
 export default function Edit({ setting }: { setting: any }) {
     const [isTesting, setIsTesting] = useState(false);
@@ -17,6 +17,8 @@ export default function Edit({ setting }: { setting: any }) {
         environment: setting.environment || 'test',
         is_active: setting.is_active || false,
         company_title: setting.company_title || '',
+        company_phone: setting.company_phone || '',
+        company_logo_url: setting.company_logo_url || '',
         tax_number: setting.tax_number || '',
         tax_office: setting.tax_office || '',
         gib_user_code: setting.gib_user_code || '',
@@ -42,6 +44,7 @@ export default function Edit({ setting }: { setting: any }) {
 
     const handleTestConnection = async () => {
         setIsTesting(true);
+
         try {
             const response = await fetch('/settings/e-documents/test-connection', {
                 method: 'POST',
@@ -158,6 +161,16 @@ export default function Edit({ setting }: { setting: any }) {
                                         <div className="space-y-2">
                                             <Label>Vergi Dairesi</Label>
                                             <Input value={data.tax_office} onChange={e => setData('tax_office', e.target.value)} placeholder="Mecidiyeköy VD" />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label>Firma Telefonu</Label>
+                                            <Input value={data.company_phone} onChange={e => setData('company_phone', e.target.value)} placeholder="0555 555 5555" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Firma Logo URL</Label>
+                                            <Input value={data.company_logo_url} onChange={e => setData('company_logo_url', e.target.value)} placeholder="https://example.com/logo.png" />
                                         </div>
                                     </div>
                                     

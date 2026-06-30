@@ -10,7 +10,7 @@ class CashRegisterController extends Controller
     public function index(Request $request)
     {
         $query = CashRegister::query();
-        
+
         if ($search = $request->input('search')) {
             $query->where('name', 'like', "%{$search}%");
         }
@@ -19,7 +19,7 @@ class CashRegisterController extends Controller
 
         return inertia('CashRegisters/Index', [
             'registers' => $registers,
-            'filters' => $request->only('search')
+            'filters' => $request->only('search'),
         ]);
     }
 
@@ -28,7 +28,7 @@ class CashRegisterController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'currency' => 'required|string|max:3',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         CashRegister::create($validated);
@@ -41,7 +41,7 @@ class CashRegisterController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'currency' => 'required|string|max:3',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         $cashRegister->update($validated);
@@ -56,7 +56,7 @@ class CashRegisterController extends Controller
         }
 
         $cashRegister->delete();
-        
+
         return redirect()->back()->with('success', 'Kasa silindi.');
     }
 }

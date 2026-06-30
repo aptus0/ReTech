@@ -2,10 +2,10 @@
 
 namespace App\Services\Finance;
 
-use App\Models\OpenTransaction;
 use App\Models\CashMovement;
 use App\Models\CashRegister;
 use App\Models\Customer;
+use App\Models\OpenTransaction;
 use Illuminate\Support\Facades\DB;
 
 class CollectionService
@@ -20,7 +20,7 @@ class CollectionService
 
             // 1. Kasa Hareketi Oluştur
             CashMovement::create([
-                'register_id' => $registerId,
+                'cash_register_id' => $registerId,
                 'account_id' => $transaction->account_id,
                 'payment_method_id' => $paymentMethodId,
                 'type' => $transaction->type === 'receivable' ? 'collection' : 'payment',
@@ -49,14 +49,14 @@ class CollectionService
             // 4. Açık İşlemi (OpenTransaction) Güncelle
             $transaction->paid_amount += $amount;
             $transaction->remaining_amount = $transaction->amount - $transaction->paid_amount;
-            
+
             if ($transaction->remaining_amount <= 0) {
                 $transaction->status = 'paid';
                 $transaction->remaining_amount = 0; // Olası fazladan ödeme durumunda negatife inmesini engelle
             } else {
                 $transaction->status = 'partial';
             }
-            
+
             $transaction->save();
 
             return $transaction;

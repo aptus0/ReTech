@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCashMovementRequest;
 use App\Models\CashMovement;
 use App\Models\CashRegister;
 use App\Models\Customer;
 use App\Models\PaymentMethod;
-use App\Http\Requests\StoreCashMovementRequest;
-use App\Http\Requests\UpdateCashMovementRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -67,7 +66,7 @@ class CashMovementController extends Controller
     public function show(CashMovement $cashMovement)
     {
         return inertia('Finance/CashMovements/Show', [
-            'movement' => $cashMovement->load(['register', 'account', 'paymentMethod'])
+            'movement' => $cashMovement->load(['register', 'account', 'paymentMethod']),
         ]);
     }
 

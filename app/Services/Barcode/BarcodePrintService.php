@@ -13,11 +13,11 @@ class BarcodePrintService
      */
     public function generateRawCommands(BarcodePrinter $printer, BarcodeSchema $schema, array $items): string
     {
-        $rawCommand = "";
+        $rawCommand = '';
 
         if ($printer->language === 'tspl') {
             $renderer = new TsplRenderer($printer, $schema);
-            
+
             // For TSPL, we setup the document configuration once at the top
             $renderer->begin();
 
@@ -30,7 +30,7 @@ class BarcodePrintService
 
                 // Render the items for this specific product
                 $renderer->renderItems($schemaItems, $data);
-                
+
                 // Add print command for N copies of this label
                 $renderer->print($copies);
             }

@@ -18,7 +18,7 @@ class GibPortalProvider implements EDocumentProviderInterface
     public function testConnection(): array
     {
         // Here we would implement real cURL/SOAP requests to GIB Test or Prod API
-        
+
         return [
             'success' => false,
             'message' => 'GİB İnteraktif Portal Entegrasyonu henüz aktif edilmedi.',

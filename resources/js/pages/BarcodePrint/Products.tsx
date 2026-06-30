@@ -1,13 +1,13 @@
 import { Head, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Printer, RefreshCw, Layers } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import AppLayout from '@/layouts/app-layout';
 
 export default function Products({ products, printers, schemas }: { products: any[], printers: any[], schemas: any[] }) {
     const [selectedProducts, setSelectedProducts] = useState<{product_id: number, copies: number}[]>([]);
@@ -27,18 +27,23 @@ export default function Products({ products, printers, schemas }: { products: an
     };
 
     const updateCopies = (productId: number, copies: number) => {
-        if (copies < 1) copies = 1;
+        if (copies < 1) {
+copies = 1;
+}
+
         setSelectedProducts(selectedProducts.map(p => p.product_id === productId ? { ...p, copies } : p));
     };
 
     const handlePrint = async () => {
         if (selectedProducts.length === 0) {
             toast.error('Lütfen barkodunu yazdırmak istediğiniz ürünleri seçin.');
+
             return;
         }
 
         if (!data.printer_id || !data.schema_id) {
             toast.error('Lütfen bir yazıcı ve barkod şeması seçin.');
+
             return;
         }
 
@@ -101,6 +106,7 @@ export default function Products({ products, printers, schemas }: { products: an
                             <tbody>
                                 {products.map((product) => {
                                     const selected = selectedProducts.find(p => p.product_id === product.id);
+
                                     return (
                                         <tr key={product.id} className="border-b last:border-0 hover:bg-muted/50">
                                             <td className="px-6 py-3">

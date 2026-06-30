@@ -1,15 +1,30 @@
-import { Head, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import { Head, useForm, router } from '@inertiajs/react';
+import { Search, ShoppingCart, User, CreditCard, Banknote, Trash2, Tag, Calendar, BadgePercent, AlertTriangle, Package, UserPlus } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import axios from 'axios';
+import { toast } from 'sonner';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useState, useMemo } from 'react';
-import { Search, ShoppingCart, User, CreditCard, Banknote, Trash2, Tag, Calendar, BadgePercent, AlertTriangle } from 'lucide-react';
-import InputError from '@/components/input-error';
-import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import AppLayout from '@/layouts/app-layout';
 
-export default function SalesFlow({ products, customers, registers }: { products: any[], customers: any[], registers: any[] }) {
+export default function SalesFlow({ products, customers: initialCustomers, registers }: { products: any[], customers: any[], registers: any[] }) {
     const [searchQuery, setSearchQuery] = useState('');
+    const [customers, setCustomers] = useState(initialCustomers);
+    const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+    
+    // New customer form state
+    const [newCustomer, setNewCustomer] = useState({
+        name: '',
+        phone: '',
+        type: 'customer',
+        tax_number: '',
+        tax_office: '',
+        address: ''
+    });
+    const [isSubmittingCustomer, setIsSubmittingCustomer] = useState(false);
     
     const { data, setData, post, processing, errors, reset } = useForm({
         customer_id: '',
@@ -25,7 +40,10 @@ export default function SalesFlow({ products, customers, registers }: { products
     });
 
     const filteredProducts = useMemo(() => {
-        if (!searchQuery) return products;
+        if (!searchQuery) {
+            return products;
+        }
+
         return products.filter(p => 
             p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
             (p.barcode && p.barcode.includes(searchQuery)) ||
@@ -36,25 +54,31 @@ export default function SalesFlow({ products, customers, registers }: { products
     const addToCart = (product: any) => {
         const existing = data.items.find(i => i.product_id === product.id);
         let newItems = [];
+        const price = parseFloat(product.sale_price) || 0;
+
         if (existing) {
             newItems = data.items.map(i => 
-                i.product_id === product.id ? { ...i, quantity: i.quantity + 1, total: (i.quantity + 1) * i.unit_price } : i
+                i.product_id === product.id ? { ...i, quantity: i.quantity + 1, total: (i.quantity + 1) * price } : i
             );
         } else {
             newItems = [...data.items, {
                 product_id: product.id,
                 product_name: product.name,
                 quantity: 1,
-                unit_price: product.sale_price,
+                unit_price: price,
                 tax_rate: product.tax_rate || 0,
-                total: product.sale_price
+                total: price
             }];
         }
+
         updateTotals(newItems);
     };
 
     const updateQuantity = (index: number, quantity: number) => {
-        if (quantity < 0.1) return;
+        if (quantity < 0.1) {
+            return;
+        }
+
         const newItems = [...data.items];
         newItems[index].quantity = quantity;
         newItems[index].total = quantity * newItems[index].unit_price;
@@ -83,20 +107,44 @@ export default function SalesFlow({ products, customers, registers }: { products
         }));
     };
 
+    const handleCreateCustomer = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmittingCustomer(true);
+        try {
+            const response = await axios.post('/customers/api/store', newCustomer);
+            if (response.data.success) {
+                toast.success('Müşteri başarıyla oluşturuldu!');
+                const createdCustomer = response.data.customer;
+                setCustomers(prev => [...prev, createdCustomer]);
+                setData('customer_id', createdCustomer.id.toString());
+                setIsCustomerModalOpen(false);
+                setNewCustomer({ name: '', phone: '', type: 'customer', tax_number: '', tax_office: '', address: '' });
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || 'Müşteri oluşturulurken hata oluştu.');
+        } finally {
+            setIsSubmittingCustomer(false);
+        }
+    };
+
     const submitSale = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (data.items.length === 0) {
             toast.error('Sepette ürün yok!');
             return;
         }
 
         post('/sales-flow', {
-            onSuccess: () => {
+            onSuccess: (page) => {
                 reset();
                 toast.success('Satış başarıyla tamamlandı!');
+                // Wait, if backend redirects to e-documents, inertia will handle it.
+                // If the backend is updated to redirect to e-documents.show, inertia will navigate automatically!
             },
             onError: (err) => {
                 console.error(err);
+
                 if (Object.values(err).length > 0) {
                     toast.error(Object.values(err)[0] as string);
                 } else {
@@ -128,15 +176,28 @@ export default function SalesFlow({ products, customers, registers }: { products
                             <div 
                                 key={product.id} 
                                 onClick={() => addToCart(product)}
-                                className="bg-card border rounded-md p-3 cursor-pointer hover:border-orange-500 hover:shadow-md transition-all group flex flex-col justify-between h-28 relative overflow-hidden"
+                                className="bg-card border rounded-md p-3 cursor-pointer hover:border-orange-500 hover:shadow-md transition-all group flex flex-col justify-between h-[110px] relative overflow-hidden"
                             >
-                                <div className="font-semibold text-sm leading-tight group-hover:text-orange-600">{product.name}</div>
-                                <div className="text-xs text-muted-foreground mt-1 flex-1">{product.stock_code}</div>
-                                <div className="flex justify-between items-end">
-                                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${product.current_stock > 10 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                        Stok: {product.current_stock}
-                                    </span>
-                                    <span className="font-bold text-lg">₺{Number(product.sale_price).toLocaleString('tr-TR')}</span>
+                                <div className="flex gap-3 h-full">
+                                    <div className="w-16 h-16 bg-neutral-100 dark:bg-neutral-800 rounded-md flex-shrink-0 flex items-center justify-center overflow-hidden border">
+                                        {product.image ? (
+                                            <img src={`/storage/${product.image}`} alt={product.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <Package className="w-8 h-8 text-neutral-300" />
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col flex-1 justify-between h-full">
+                                        <div>
+                                            <div className="font-semibold text-sm leading-tight group-hover:text-orange-600 line-clamp-2">{product.name}</div>
+                                            <div className="text-xs text-muted-foreground mt-1">{product.stock_code}</div>
+                                        </div>
+                                        <div className="flex justify-between items-end mt-1">
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${product.current_stock > 10 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                Stok: {product.current_stock}
+                                            </span>
+                                            <span className="font-bold text-sm md:text-base">₺{parseFloat(product.sale_price || '0').toLocaleString('tr-TR')}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -184,7 +245,49 @@ export default function SalesFlow({ products, customers, registers }: { products
 
                     <form onSubmit={submitSale} className="bg-neutral-50 dark:bg-neutral-950 p-4 border-t space-y-4">
                         <div className="space-y-2">
-                            <Label className="flex items-center text-xs uppercase tracking-wider text-muted-foreground"><User className="w-3 h-3 mr-1" /> Müşteri (Opsiyonel)</Label>
+                            <div className="flex items-center justify-between">
+                                <Label className="flex items-center text-xs uppercase tracking-wider text-muted-foreground"><User className="w-3 h-3 mr-1" /> Müşteri</Label>
+                                <Dialog open={isCustomerModalOpen} onOpenChange={setIsCustomerModalOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button type="button" variant="ghost" size="sm" className="h-6 text-xs text-orange-600 hover:text-orange-700 px-2 py-0"><UserPlus className="w-3 h-3 mr-1"/> Yeni Ekle</Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Yeni Müşteri (Cari) Ekle</DialogTitle>
+                                        </DialogHeader>
+                                        <div className="space-y-4 py-4">
+                                            <div className="space-y-2">
+                                                <Label>Ad Soyad / Firma Unvanı <span className="text-red-500">*</span></Label>
+                                                <Input value={newCustomer.name} onChange={e => setNewCustomer({...newCustomer, name: e.target.value})} required />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>TC Kimlik / Vergi No</Label>
+                                                <Input value={newCustomer.tax_number} onChange={e => setNewCustomer({...newCustomer, tax_number: e.target.value})} />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <Label>Telefon</Label>
+                                                    <Input value={newCustomer.phone} onChange={e => setNewCustomer({...newCustomer, phone: e.target.value})} />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Vergi Dairesi</Label>
+                                                    <Input value={newCustomer.tax_office} onChange={e => setNewCustomer({...newCustomer, tax_office: e.target.value})} />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Adres</Label>
+                                                <Input value={newCustomer.address} onChange={e => setNewCustomer({...newCustomer, address: e.target.value})} />
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button type="button" variant="outline" onClick={() => setIsCustomerModalOpen(false)}>İptal</Button>
+                                            <Button type="button" className="bg-orange-600 hover:bg-orange-700" onClick={handleCreateCustomer} disabled={isSubmittingCustomer || !newCustomer.name}>
+                                                {isSubmittingCustomer ? 'Kaydediliyor...' : 'Kaydet ve Seç'}
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
                             <select 
                                 className="w-full h-9 rounded-md border-neutral-300 text-sm shadow-sm"
                                 value={data.customer_id}
@@ -271,7 +374,7 @@ export default function SalesFlow({ products, customers, registers }: { products
                             disabled={processing || data.items.length === 0 || (data.payment_type !== 'cash' && !data.customer_id)} 
                             className="w-full h-14 text-lg font-bold bg-neutral-900 hover:bg-neutral-800 text-white shadow-xl"
                         >
-                            Satışı Tamamla
+                            Satışı Tamamla ve Fatura Kes
                         </Button>
                     </form>
                 </div>

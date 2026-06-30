@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Database\Factories\CustomerFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-    /** @use HasFactory<\Database\Factories\CustomerFactory> */
+    /** @use HasFactory<CustomerFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -27,4 +28,9 @@ class Customer extends Model
         'is_active' => 'boolean',
         'balance' => 'decimal:2',
     ];
+
+    public function customerNotes()
+    {
+        return $this->hasMany(CustomerNote::class)->orderByDesc('created_at');
+    }
 }

@@ -11,8 +11,9 @@ class BarcodePrinterController extends Controller
     public function index()
     {
         $printers = BarcodePrinter::orderBy('created_at', 'desc')->get();
+
         return Inertia::render('BarcodePrinters/Index', [
-            'printers' => $printers
+            'printers' => $printers,
         ]);
     }
 
@@ -35,7 +36,7 @@ class BarcodePrinterController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        if (!empty($validated['is_default'])) {
+        if (! empty($validated['is_default'])) {
             BarcodePrinter::where('id', '>', 0)->update(['is_default' => false]);
         }
 
@@ -63,7 +64,7 @@ class BarcodePrinterController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        if (!empty($validated['is_default'])) {
+        if (! empty($validated['is_default'])) {
             BarcodePrinter::where('id', '!=', $barcodePrinter->id)->update(['is_default' => false]);
         }
 
@@ -75,6 +76,7 @@ class BarcodePrinterController extends Controller
     public function destroy(BarcodePrinter $barcodePrinter)
     {
         $barcodePrinter->delete();
+
         return back()->with('success', 'Yazıcı silindi.');
     }
 }

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
+use App\Models\Customer;
+use App\Models\CashRegister;
+use App\Models\CashMovement;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -15,10 +17,10 @@ class CustomerController extends Controller
 
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('tax_number', 'like', "%{$search}%");
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('tax_number', 'like', "%{$search}%");
             });
         }
 
@@ -30,7 +32,7 @@ class CustomerController extends Controller
 
         return inertia('Customers/Index', [
             'customers' => $customers,
-            'filters' => $request->only(['search', 'type'])
+            'filters' => $request->only(['search', 'type']),
         ]);
     }
 
@@ -47,17 +49,36 @@ class CustomerController extends Controller
             ->with('success', 'Cari kart başarıyla oluşturuldu.');
     }
 
+    public function apiStore(StoreCustomerRequest $request)
+    {
+        $customer = Customer::create($request->validated());
+
+        return response()->json([
+            'success' => true,
+            'customer' => $customer,
+            'message' => 'Cari başarıyla oluşturuldu.'
+        ]);
+    }
+
     public function show(Customer $customer)
     {
+        $customer->load('customerNotes.user');
+        $cashMovements = CashMovement::where('account_id', $customer->id)->with('register')->latest('movement_date')->get();
+        $registers = CashRegister::where('is_active', true)->get();
+        $paymentMethods = \App\Models\PaymentMethod::where('is_active', true)->get();
+
         return inertia('Customers/Show', [
-            'customer' => $customer
+            'customer' => $customer,
+            'cashMovements' => $cashMovements,
+            'registers' => $registers,
+            'paymentMethods' => $paymentMethods,
         ]);
     }
 
     public function edit(Customer $customer)
     {
         return inertia('Customers/Edit', [
-            'customer' => $customer
+            'customer' => $customer,
         ]);
     }
 
@@ -81,9 +102,38 @@ class CustomerController extends Controller
 
     public function toggleStatus(Customer $customer)
     {
-        $customer->update(['is_active' => !$customer->is_active]);
+        $customer->update(['is_active' => ! $customer->is_active]);
 
         return redirect()->back()
             ->with('success', 'Cari durumu güncellendi.');
+    }
+
+    public function collect(Request $request, Customer $customer)
+    {
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+            'cash_register_id' => 'required|exists:cash_registers,id',
+            'payment_method_id' => 'required|exists:payment_methods,id',
+            'description' => 'nullable|string',
+            'movement_date' => 'required|date',
+        ]);
+
+        $customer->balance -= $validated['amount'];
+        $customer->save();
+
+        CashMovement::create([
+            'cash_register_id' => $validated['cash_register_id'],
+            'account_id' => $customer->id,
+            'payment_method_id' => $validated['payment_method_id'],
+            'type' => 'in',
+            'amount' => $validated['amount'],
+            'description' => $validated['description'],
+            'source_type' => Customer::class,
+            'source_id' => $customer->id,
+            'created_by' => $request->user()->id,
+            'movement_date' => $validated['movement_date'],
+        ]);
+
+        return redirect()->back()->with('success', 'Tahsilat başarıyla alındı.');
     }
 }

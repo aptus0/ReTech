@@ -1,8 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Users, Box, FileText, Tags, Ruler, ShoppingCart, Calculator, Calendar, FileCheck, RefreshCcw, PieChart } from 'lucide-react';
-import { useCurrentUrl } from '@/hooks/use-current-url';
-import { cn } from '@/lib/utils';
-import { dashboard } from '@/routes';
+import { LayoutGrid, Users, Box, FileText, Tags, Ruler, ShoppingCart, Calculator, Calendar, FileCheck, RefreshCcw, PieChart, Store, Globe, PackageCheck, CornerUpLeft } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,6 +8,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useCurrentUrl } from '@/hooks/use-current-url';
+import { cn } from '@/lib/utils';
+import { dashboard } from '@/routes';
 
 const navGroups = [
     {
@@ -44,6 +44,16 @@ const navGroups = [
         items: [
             { title: 'Müşteriler & Tedarikçiler', href: '/customers', icon: Users },
             { title: 'e-Belge Yönetimi', href: '/e-documents', icon: FileCheck },
+        ]
+    },
+    {
+        title: 'PazaryeriOS',
+        icon: Store,
+        items: [
+            { title: 'Dashboard', href: '/marketplace/dashboard', icon: Globe },
+            { title: 'Ürün Havuzu', href: '/marketplace/products', icon: Box },
+            { title: 'Siparişler', href: '/marketplace/orders', icon: PackageCheck },
+            { title: 'İade ve İptal', href: '/marketplace/returns', icon: CornerUpLeft },
         ]
     },
     {

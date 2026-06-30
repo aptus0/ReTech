@@ -18,24 +18,24 @@ return new class extends Migration
             $table->string('invoice_number')->unique();
             $table->date('issue_date');
             $table->date('due_date')->nullable();
-            
+
             $table->decimal('subtotal', 15, 2)->default(0);
             $table->decimal('tax_total', 15, 2)->default(0);
             $table->decimal('discount_total', 15, 2)->default(0);
             $table->decimal('grand_total', 15, 2)->default(0);
-            
+
             $table->string('status')->default('draft'); // draft, completed, cancelled
-            
+
             // E-Document fields
             $table->string('e_document_type')->default('none'); // none, e_invoice, e_archive
             $table->string('e_document_status')->default('draft'); // draft, ready, sent, accepted, rejected, cancelled, failed
             $table->uuid('e_document_uuid')->nullable();
             $table->text('e_document_response')->nullable();
             $table->timestamp('e_document_sent_at')->nullable();
-            
+
             $table->text('notes')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            
+
             $table->timestamps();
         });
     }

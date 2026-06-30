@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -41,6 +43,38 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
+
+        Fortify::authenticateUsing(function (Request $request) {
+            $isEmail = filter_var($request->email, FILTER_VALIDATE_EMAIL);
+
+            if ($isEmail) {
+                // Admin login attempt
+                $user = User::where('email', $request->email)->first();
+                if ($user && Hash::check($request->password, $user->password)) {
+                    return $user;
+                }
+            } else {
+                // Staff login attempt
+                // $request->email is actually holding the store_code here if they typed it in the single field,
+                // but we should expect store_code and personnel_no as separate fields.
+                // If they use a custom login form, we will post store_code, personnel_no, password.
+                $storeCode = $request->input('store_code');
+                $personnelNo = $request->input('personnel_no');
+
+                // If the frontend uses custom fields
+                if ($storeCode && $personnelNo) {
+                    $user = User::where('store_code', $storeCode)
+                        ->where('personnel_no', $personnelNo)
+                        ->first();
+
+                    if ($user && Hash::check($request->password, $user->password)) {
+                        return $user;
+                    }
+                }
+            }
+
+            return null;
+        });
     }
 
     /**

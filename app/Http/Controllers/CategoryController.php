@@ -12,7 +12,7 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $query = Category::query();
-        
+
         if ($search = $request->input('search')) {
             $query->where('name', 'like', "%{$search}%");
         }
@@ -21,7 +21,7 @@ class CategoryController extends Controller
 
         return inertia('Categories/Index', [
             'categories' => $categories,
-            'filters' => $request->only('search')
+            'filters' => $request->only('search'),
         ]);
     }
 
@@ -31,7 +31,7 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
-            'image' => 'nullable|image|max:2048'
+            'image' => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -51,7 +51,7 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
-            'image' => 'nullable|image|max:2048'
+            'image' => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -72,11 +72,18 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
-        if ($category->image) {
-            Storage::disk('public')->delete($category->image);
+        try {
+            if ($category->image) {
+                Storage::disk('public')->delete($category->image);
+            }
+            $category->delete();
+
+            return redirect()->back()->with('success', 'Kategori silindi.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return redirect()->back()->withErrors(['error' => 'Bu kategori ürünlerde kullanıldığı için silinemez.']);
+            }
+            return redirect()->back()->withErrors(['error' => 'Kategori silinirken bir hata oluştu.']);
         }
-        $category->delete();
-        
-        return redirect()->back()->with('success', 'Kategori silindi.');
     }
 }

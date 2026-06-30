@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CashRegister;
+use App\Models\Customer;
+use App\Models\Product;
+use App\Services\Sales\SaleService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Product;
-use App\Models\Customer;
-use App\Models\CashRegister;
-use App\Services\Sales\SaleService;
 
 class SalesFlowController extends Controller
 {
@@ -45,9 +45,10 @@ class SalesFlowController extends Controller
 
         try {
             $invoice = $saleService->createSale($validated);
-            return redirect()->back()->with('success', 'Satış başarıyla tamamlandı. Fatura No: ' . $invoice->invoice_number);
+
+            return redirect()->route('e-documents.show', $invoice->id)->with('success', 'Satış başarıyla tamamlandı. Fatura No: '.$invoice->invoice_number);
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Satış işlemi sırasında bir hata oluştu: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Satış işlemi sırasında bir hata oluştu: '.$e->getMessage()]);
         }
     }
 }

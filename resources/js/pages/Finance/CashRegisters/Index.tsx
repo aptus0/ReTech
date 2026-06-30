@@ -1,8 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
-import { type BreadcrumbItem } from '@/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import AppLayout from '@/layouts/app-layout';
+import type {BreadcrumbItem} from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

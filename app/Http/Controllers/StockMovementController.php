@@ -10,6 +10,30 @@ use Illuminate\Support\Facades\DB;
 
 class StockMovementController extends Controller
 {
+    public function index()
+    {
+        $products = Product::with(['category', 'brand'])
+            ->orderBy('current_stock', 'asc')
+            ->paginate(20);
+
+        $recentMovements = StockMovement::with(['product'])
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
+        $totalStockValue = Product::sum(DB::raw('current_stock * sale_price'));
+        $lowStockCount = Product::where('current_stock', '<', 10)->count();
+
+        return inertia('StockMovements/Index', [
+            'products' => $products,
+            'recentMovements' => $recentMovements,
+            'stats' => [
+                'totalValue' => $totalStockValue,
+                'lowStockCount' => $lowStockCount,
+            ],
+        ]);
+    }
+
     public function create(Request $request)
     {
         $products = Product::where('is_active', true)->get();

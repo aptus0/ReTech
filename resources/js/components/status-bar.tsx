@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import { Clock, Activity, HardDrive, Network, Globe } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export function StatusBar() {
     const [time, setTime] = useState(new Date());
@@ -12,6 +12,7 @@ export function StatusBar() {
 
     useEffect(() => {
         const timer = setInterval(() => setTime(new Date()), 1000);
+
         return () => clearInterval(timer);
     }, []);
 
@@ -19,6 +20,7 @@ export function StatusBar() {
         const fetchSystemInfo = async () => {
             try {
                 const response = await fetch('/api/system-status');
+
                 if (response.ok) {
                     const data = await response.json();
                     setSysInfo(data);

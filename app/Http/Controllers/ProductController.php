@@ -97,7 +97,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $product->load(['category', 'brand', 'unit']);
-        $movements = StockMovement::where('product_id', $product->id)->latest()->take(50)->get();
+        $movements = StockMovement::with('user')->where('product_id', $product->id)->latest()->take(100)->get();
 
         return inertia('Products/Show', [
             'product' => $product,
@@ -118,7 +118,7 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product)
     {
         $data = $request->validated();
-        
+
         if ($request->hasFile('image')) {
             if ($product->image) {
                 Storage::disk('public')->delete($product->image);
@@ -133,10 +133,23 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        // Silmek yerine pasife alma tercih edilebilir veya soft delete kullanılabilir. Soft delete migrationda eklendiği için delete yapabiliriz.
         $product->delete();
 
-        return redirect()->route('products.index')->with('success', 'Ürün başarıyla silindi.');
+        return redirect()->route('products.index')
+            ->with('success', 'Ürün başarıyla silindi.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:products,id'
+        ]);
+
+        Product::whereIn('id', $validated['ids'])->delete();
+
+        return redirect()->route('products.index')
+            ->with('success', count($validated['ids']) . ' ürün başarıyla silindi.');
     }
 
     public function toggleStatus(Product $product)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -41,12 +42,13 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'name' => config('app.name', 'Re Tech Terminal'),
-            'store_name' => \App\Models\Setting::get('store_name', 'Re Tech Terminal'),
-            'store_logo' => \App\Models\Setting::get('store_logo'),
+            'store_name' => Setting::get('store_name', 'Re Tech Terminal'),
+            'store_logo' => Setting::get('store_logo'),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
+                'license_warning' => fn () => $request->session()->get('license_warning'),
             ],
         ];
     }

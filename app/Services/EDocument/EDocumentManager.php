@@ -15,9 +15,9 @@ class EDocumentManager
     public function __construct()
     {
         $setting = EDocumentSetting::first();
-        
-        if (!$setting) {
-            throw new Exception("e-Belge ayarları bulunamadı. Lütfen önce ayarları yapılandırın.");
+
+        if (! $setting) {
+            throw new Exception('e-Belge ayarları bulunamadı. Lütfen önce ayarları yapılandırın.');
         }
 
         $this->setting = $setting;
@@ -28,8 +28,8 @@ class EDocumentManager
      */
     public function provider(): EDocumentProviderInterface
     {
-        if (!$this->setting->is_active) {
-            throw new Exception("e-Belge entegrasyonu aktif değil.");
+        if (! $this->setting->is_active) {
+            throw new Exception('e-Belge entegrasyonu aktif değil.');
         }
 
         switch ($this->setting->provider) {

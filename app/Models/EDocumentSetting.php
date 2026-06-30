@@ -36,13 +36,14 @@ class EDocumentSetting extends Model
      */
     public function getGibPasswordAttribute()
     {
-        if (!empty($this->attributes['gib_password_encrypted'])) {
+        if (! empty($this->attributes['gib_password_encrypted'])) {
             try {
                 return Crypt::decryptString($this->attributes['gib_password_encrypted']);
             } catch (\Exception $e) {
                 return null;
             }
         }
+
         return null;
     }
 }

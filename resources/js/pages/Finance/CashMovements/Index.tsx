@@ -1,9 +1,9 @@
-import { useState } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
+import { Plus, ArrowDownRight, ArrowUpRight, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Dialog,
     DialogContent,
@@ -11,6 +11,8 @@ import {
     DialogTitle,
     DialogFooter,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -18,8 +20,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Plus, ArrowDownRight, ArrowUpRight, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
 import AppLayout from '@/layouts/app-layout';
 
 interface Props {
@@ -79,7 +79,10 @@ export default function Index({ movements, registers, accounts, paymentMethods }
     };
 
     const handleDelete = () => {
-        if (!deletingId) return;
+        if (!deletingId) {
+return;
+}
+
         router.delete(`/cash-movements/${deletingId}`, {
             onSuccess: () => {
                 toast.success('Kasa hareketi başarıyla silindi.');
@@ -191,7 +194,13 @@ export default function Index({ movements, registers, accounts, paymentMethods }
             </div>
 
             {/* ── Create Movement Modal ── */}
-            <Dialog open={createOpen} onOpenChange={(open) => { setCreateOpen(open); if (!open) reset(); }}>
+            <Dialog open={createOpen} onOpenChange={(open) => {
+ setCreateOpen(open);
+
+ if (!open) {
+reset();
+} 
+}}>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
                         <DialogTitle>Yeni Kasa İşlemi</DialogTitle>
@@ -344,7 +353,9 @@ export default function Index({ movements, registers, accounts, paymentMethods }
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => { setCreateOpen(false); reset(); }}
+                                onClick={() => {
+ setCreateOpen(false); reset(); 
+}}
                             >
                                 İptal
                             </Button>
@@ -373,7 +384,9 @@ export default function Index({ movements, registers, accounts, paymentMethods }
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => { setDeleteOpen(false); setDeletingId(null); }}
+                            onClick={() => {
+ setDeleteOpen(false); setDeletingId(null); 
+}}
                         >
                             İptal
                         </Button>

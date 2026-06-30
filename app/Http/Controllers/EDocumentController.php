@@ -2,26 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use App\Models\Invoice;
 use App\Models\EDocumentLog;
 use App\Models\EDocumentSetting;
+use App\Models\Invoice;
+use App\Models\Setting;
 use App\Services\EDocument\EDocumentManager;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class EDocumentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Invoice::with('customer')->orderBy('created_at', 'desc');
+        $query = Invoice::with('customer')
+            ->where('grand_total', '>', 0)
+            ->orderBy('created_at', 'desc');
 
         if ($search = $request->input('search')) {
-            $query->where('invoice_number', 'like', "%{$search}%")
-                  ->orWhere('e_document_no', 'like', "%{$search}%")
-                  ->orWhereHas('customer', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('tax_number', 'like', "%{$search}%");
-                  });
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                    ->orWhere('e_document_no', 'like', "%{$search}%")
+                    ->orWhere('id', $search) // Allow searching by ID from OpenTransactions link
+                    ->orWhereHas('customer', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%")
+                            ->orWhere('tax_number', 'like', "%{$search}%");
+                    });
+            });
         }
 
         if ($status = $request->input('status')) {
@@ -30,18 +36,40 @@ class EDocumentController extends Controller
 
         $invoices = $query->paginate(20)->withQueryString();
 
+        $statsQuery = Invoice::where('grand_total', '>', 0);
         $stats = [
-            'total' => Invoice::count(),
-            'sent' => Invoice::where('e_document_status', 'sent')->count(),
-            'accepted' => Invoice::where('e_document_status', 'accepted')->count(),
-            'failed' => Invoice::where('e_document_status', 'failed')->count(),
-            'draft' => Invoice::where('e_document_status', 'draft')->count(),
+            'total' => (clone $statsQuery)->count(),
+            'sent' => (clone $statsQuery)->where('e_document_status', 'sent')->count(),
+            'accepted' => (clone $statsQuery)->where('e_document_status', 'accepted')->count(),
+            'failed' => (clone $statsQuery)->where('e_document_status', 'failed')->count(),
+            'draft' => (clone $statsQuery)->where('e_document_status', 'draft')->count(),
         ];
-            
+
         return Inertia::render('EDocuments/Index', [
             'invoices' => $invoices,
             'filters' => $request->only('search', 'status'),
-            'stats' => $stats
+            'stats' => $stats,
+        ]);
+    }
+
+    public function show(Invoice $invoice)
+    {
+        $invoice->load(['customer', 'items', 'cashMovements.register']);
+
+        return Inertia::render('EDocuments/Show', [
+            'invoice' => $invoice,
+            'companySettings' => [
+                'company_name' => Setting::get('company_name', 'Bilinmeyen Firma'),
+                'store_logo' => Setting::get('store_logo'),
+                'tax_office' => Setting::get('tax_office', ''),
+                'tax_number' => Setting::get('tax_number', ''),
+                'address' => Setting::get('address', ''),
+                'district' => Setting::get('district', ''),
+                'city' => Setting::get('city', ''),
+                'phone' => Setting::get('phone', ''),
+                'email' => Setting::get('email', ''),
+                'website' => Setting::get('website', ''),
+            ]
         ]);
     }
 
@@ -68,27 +96,27 @@ class EDocumentController extends Controller
                 // Log the success
                 $this->createLog($invoice, $result, 'send');
 
-                return back()->with('success', 'e-Belge başarıyla gönderildi: ' . ($result['document_no'] ?? ''));
+                return back()->with('success', 'e-Belge başarıyla gönderildi: '.($result['document_no'] ?? ''));
             } else {
                 $invoice->update([
                     'e_document_status' => 'failed',
-                    'e_document_error' => $result['message']
+                    'e_document_error' => $result['message'],
                 ]);
 
                 // Log the failure
                 $this->createLog($invoice, $result, 'send');
 
-                return back()->withErrors(['error' => 'Gönderim hatası: ' . $result['message']]);
+                return back()->withErrors(['error' => 'Gönderim hatası: '.$result['message']]);
             }
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Gönderim hatası: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Gönderim hatası: '.$e->getMessage()]);
         }
     }
 
     public function checkStatus(Invoice $invoice, EDocumentManager $manager)
     {
         try {
-            if (!$invoice->e_document_uuid) {
+            if (! $invoice->e_document_uuid) {
                 return back()->withErrors(['error' => 'Faturaya ait UUID bulunamadı, önce GİB\'e gönderilmelidir.']);
             }
 
@@ -109,16 +137,16 @@ class EDocumentController extends Controller
             // Log status check
             $this->createLog($invoice, $result, 'status_check');
 
-            return back()->with('success', 'Belge durumu güncellendi: ' . $invoice->e_document_status);
+            return back()->with('success', 'Belge durumu güncellendi: '.$invoice->e_document_status);
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Durum sorgulama hatası: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Durum sorgulama hatası: '.$e->getMessage()]);
         }
     }
 
     protected function createLog(Invoice $invoice, array $result, string $actionType)
     {
         $setting = EDocumentSetting::first();
-        
+
         EDocumentLog::create([
             'invoice_id' => $invoice->id,
             'document_type' => $invoice->e_document_type,

@@ -24,7 +24,7 @@ class UpdateCashRegisterRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'code' => ['nullable', 'string', 'max:50', 'unique:cash_registers,code,' . $this->cash_register->id],
+            'code' => ['nullable', 'string', 'max:50', 'unique:cash_registers,code,'.$this->cash_register->id],
             'description' => ['nullable', 'string'],
         ];
     }
