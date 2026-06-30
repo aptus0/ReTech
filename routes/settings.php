@@ -30,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
     Route::inertia('settings/display', 'settings/display')->name('settings.display');
     Route::inertia('settings/marketplaces', 'settings/marketplaces')->name('settings.marketplaces');
+    Route::inertia('settings/license', 'settings/license')->name('settings.license');
 
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::resource('users', \App\Http\Controllers\UserController::class)->except(['show']);

@@ -1,5 +1,6 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -66,10 +67,16 @@ const sidebarNavItems: NavItem[] = [
         href: '/settings/marketplaces',
         icon: null,
     },
+    {
+        title: 'Lisans Yöneticisi',
+        href: '/settings/license',
+        icon: null,
+    },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
+    const { license } = usePage().props as any;
 
     return (
         <div className="px-4 py-6 max-w-[1600px] mx-auto w-full">
