@@ -30,6 +30,12 @@ Route::inertia('/', 'welcome')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::prefix('products/barcode-print')->name('barcode-print.')->group(function () {
+        Route::get('/', [BarcodePrintController::class, 'products'])->name('products');
+        Route::get('/quick', [BarcodePrintController::class, 'quick'])->name('quick');
+        Route::post('/raw', [BarcodePrintController::class, 'raw'])->name('raw');
+    });
+
     // Ürünler (Products) resource route
     Route::delete('products/bulk-delete', [ProductController::class, 'bulkDestroy'])->name('products.bulk-delete');
     Route::resource('products', ProductController::class);
@@ -95,12 +101,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('barcode-printers', BarcodePrinterController::class);
     Route::resource('barcode-schemas', BarcodeSchemaController::class);
 
-    Route::prefix('products/barcode-print')->name('barcode-print.')->group(function () {
-        Route::get('/', [BarcodePrintController::class, 'products'])->name('products');
-        Route::get('/quick', [BarcodePrintController::class, 'quick'])->name('quick');
-        Route::post('/raw', [BarcodePrintController::class, 'raw'])->name('raw');
-    });
-
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
     // PazaryeriOS Coming Soon
@@ -112,6 +112,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/license-expired', [LicenseController::class, 'expired'])->name('license.expired');
     Route::post('/license-verify', [LicenseController::class, 'verify'])->name('license.verify');
+    Route::get('/license/purchase', [LicenseController::class, 'purchase'])->name('license.purchase');
+    Route::post('/license/purchase', [LicenseController::class, 'processPurchase'])->name('license.process-purchase');
 });
 
 require __DIR__.'/settings.php';
