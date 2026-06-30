@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
+import qz from 'qz-tray';
 import { ScanBarcode, Printer, Settings2, Search, List, Trash2, CheckCircle2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { toast } from 'sonner';
@@ -31,6 +32,13 @@ export default function QuickBarcodePrint({ printers, schemas, default_schema, d
 
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // Request notification permission on mount
+    useEffect(() => {
+        if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+            Notification.requestPermission();
+        }
+    }, []);
+
     // Auto focus the input for the barcode scanner
     useEffect(() => {
         if (inputRef.current) {
@@ -40,12 +48,12 @@ export default function QuickBarcodePrint({ printers, schemas, default_schema, d
         // Refocus window clicks
         const handleWindowClick = (e: MouseEvent) => {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLButtonElement) {
-return;
-}
+                return;
+            }
 
             if (inputRef.current) {
-inputRef.current.focus();
-}
+                inputRef.current.focus();
+            }
         };
         
         window.addEventListener('click', handleWindowClick);
@@ -96,15 +104,30 @@ inputRef.current.focus();
                 });
 
                 if (res.data.success) {
-                    toast.success(`${item.product.name} otomatik yazdırıldı!`);
-                    setLastPrinted({
-                        barcode: item.product.barcode || item.product.sku,
-                        time: new Date().toLocaleTimeString('tr-TR'),
-                        status: 'Oto-Yazdırıldı'
-                    });
-                    // Delete from queue
-                    await axios.delete(`/api/mobile/print-queue/${item.id}`);
-                    setQueue(q => q.filter(qItem => qItem.id !== item.id));
+                    try {
+                        if (!qz.websocket.isActive()) await qz.websocket.connect();
+                        const config = qz.configs.create(res.data.printer_name);
+                        const printData = [{ type: 'raw', format: 'command', data: res.data.raw_command }];
+                        await qz.print(config, printData);
+                        
+                        toast.success(`${item.product.name} otomatik yazdırıldı!`);
+                        setLastPrinted({
+                            barcode: item.product.barcode || item.product.sku,
+                            time: new Date().toLocaleTimeString('tr-TR'),
+                            status: 'Oto-Yazdırıldı'
+                        });
+                        
+                        if ('Notification' in window && Notification.permission === 'granted') {
+                            new Notification('ReTech Terminal', { body: `${item.product.name} otomatik yazdırıldı!` });
+                        }
+                        if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+
+                        // Delete from queue
+                        await axios.delete(`/api/mobile/print-queue/${item.id}`);
+                        setQueue(q => q.filter(qItem => qItem.id !== item.id));
+                    } catch (qzError: any) {
+                        toast.error('QZ Hatası: ' + (qzError.message || qzError));
+                    }
                 } else {
                     toast.error(res.data.message || 'Yazdırılamadı.');
                 }
@@ -131,13 +154,10 @@ inputRef.current.focus();
     const handleBarcodeSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if (!barcode.trim()) {
-return;
-}
+        if (!barcode.trim()) return;
 
         if (!selectedPrinter || !selectedSchema) {
             toast.error('Lütfen yazıcı ve şema seçin.');
-
             return;
         }
 
@@ -153,17 +173,32 @@ return;
             });
 
             if (response.data.success) {
-                const product = response.data.product;
-                const displayTitle = product ? product.name : barcode;
-                toast.success(`${displayTitle} yazdırıldı!`);
-                setLastPrinted({
-                    barcode: displayTitle,
-                    time: new Date().toLocaleTimeString('tr-TR'),
-                    status: 'Başarılı'
-                });
-                
-                // 2 Saniye ekranda göster
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                try {
+                    if (!qz.websocket.isActive()) await qz.websocket.connect();
+                    const config = qz.configs.create(response.data.printer_name);
+                    const printData = [{ type: 'raw', format: 'command', data: response.data.raw_command }];
+                    await qz.print(config, printData);
+
+                    const product = response.data.product;
+                    const displayTitle = product ? product.name : barcode;
+                    toast.success(`${displayTitle} yazdırıldı!`);
+                    
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification('ReTech Terminal', { body: `${displayTitle} başarıyla yazdırıldı!` });
+                    }
+                    if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+
+                    setLastPrinted({
+                        barcode: displayTitle,
+                        time: new Date().toLocaleTimeString('tr-TR'),
+                        status: 'Başarılı'
+                    });
+                    
+                    // 2 Saniye ekranda göster
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                } catch (qzError: any) {
+                    toast.error('QZ Hatası: ' + (qzError.message || qzError));
+                }
             } else {
                 toast.error(response.data.message || 'Ürün bulunamadı veya yazdırılamadı.');
             }
@@ -174,8 +209,8 @@ return;
             setBarcode(''); // Clear for next scan
 
             if (inputRef.current) {
-inputRef.current.focus();
-}
+                inputRef.current.focus();
+            }
         }
     };
 
