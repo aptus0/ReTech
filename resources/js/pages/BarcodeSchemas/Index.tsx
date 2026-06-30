@@ -395,9 +395,15 @@ export default function Index({ schemas }: { schemas: any[] }) {
     );
 }
 
-Index.layout = {
-    breadcrumbs: [
-        { title: 'Ayarlar', href: '/settings/profile' },
-        { title: 'Barkod Şemaları', href: '/barcode-schemas' }
-    ]
-};
+import AppLayout from '@/layouts/app-layout';
+
+Index.layout = (page: React.ReactNode) => (
+    <AppLayout
+        breadcrumbs={[
+            { title: 'Ayarlar', href: '/settings/profile' },
+            { title: 'Barkod Şemaları', href: '/barcode-schemas' }
+        ]}
+    >
+        {page}
+    </AppLayout>
+);
