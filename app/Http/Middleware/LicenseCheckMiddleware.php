@@ -47,6 +47,21 @@ class LicenseCheckMiddleware
                     session()->now('license_warning', "Sistemi deneme sürümünde kullanıyorsunuz. $daysLeft gün sonra erişim kilitlenecektir. Lütfen lisans satın alınız.");
                 }
             }
+        } else {
+            // Lisans alınmış, bitiş tarihini kontrol et (varsa)
+            if (Storage::exists('license_expires_at.txt')) {
+                $expiresAt = \Carbon\Carbon::parse(Storage::get('license_expires_at.txt'));
+                if (now()->isAfter($expiresAt)) {
+                    return redirect()->route('license.expired');
+                } else {
+                    $daysLeft = now()->diffInDays($expiresAt);
+                    if ($request->isMethod('get') && !$request->expectsJson() && !$request->routeIs('license.*')) {
+                        if ($daysLeft <= 14) {
+                            session()->now('license_warning', "Lisans sürenizin bitmesine $daysLeft gün kaldı. Kesinti yaşamamak için yenileyebilirsiniz.");
+                        }
+                    }
+                }
+            }
         }
 
         // İsteğe bağlı: Dosyadaki key'in doğruluğunu da kontrol edebiliriz

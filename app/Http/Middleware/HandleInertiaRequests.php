@@ -36,8 +36,49 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $licenseInfo = [
+            'is_trial' => false,
+            'is_active' => true,
+        ];
+
+        if (! \Illuminate\Support\Facades\Storage::exists('license.key')) {
+            $installDateStr = \Illuminate\Support\Facades\Storage::exists('install_date.txt') 
+                ? \Illuminate\Support\Facades\Storage::get('install_date.txt') 
+                : now()->toDateTimeString();
+            $installDate = \Carbon\Carbon::parse($installDateStr);
+            $daysPassed = now()->diffInDays($installDate);
+            $daysLeft = 14 - $daysPassed;
+            $licenseInfo = [
+                'is_trial' => true,
+                'is_active' => $daysLeft > 0,
+                'days_left' => $daysLeft > 0 ? $daysLeft : 0,
+                'total_days' => 14,
+                'type' => 'Deneme Sürümü (Trial)',
+            ];
+        } else {
+            // Lisans varsa
+            if (\Illuminate\Support\Facades\Storage::exists('license_expires_at.txt')) {
+                $expiresAt = \Carbon\Carbon::parse(\Illuminate\Support\Facades\Storage::get('license_expires_at.txt'));
+                $daysLeft = now()->diffInDays($expiresAt, false); // false for negative if expired
+                $licenseInfo = [
+                    'is_trial' => false,
+                    'is_active' => $daysLeft > 0,
+                    'days_left' => $daysLeft > 0 ? (int)$daysLeft : 0,
+                    'expires_at' => $expiresAt->format('d.m.Y'),
+                    'type' => 'Abonelik',
+                ];
+            } else {
+                $licenseInfo = [
+                    'is_trial' => false,
+                    'is_active' => true,
+                    'type' => 'Ömür Boyu (Lifetime)',
+                ];
+            }
+        }
+
         return [
             ...parent::share($request),
+            'license' => $licenseInfo,
             'auth' => [
                 'user' => $request->user(),
             ],
