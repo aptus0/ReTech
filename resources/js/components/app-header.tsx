@@ -1,6 +1,6 @@
 import { Link, usePage, router } from '@inertiajs/react';
-import { Search, Zap, ScanBarcode, PackagePlus, Users, Receipt, Wallet, Layers, Info } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, Search, Zap, ScanBarcode, PackagePlus, Users, Receipt, Wallet, Layers, Info } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import AppLogo from '@/components/app-logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,11 @@ export function AppHeader() {
     const { auth } = page.props;
     const getInitials = useInitials();
     const [searchTerm, setSearchTerm] = useState('');
+    const [canGoBack, setCanGoBack] = useState(false);
+
+    useEffect(() => {
+        setCanGoBack(window.history.length > 2 || (page.url !== '/dashboard' && page.url !== '/'));
+    }, [page.url]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,9 +32,22 @@ export function AppHeader() {
     return (
         <div className="border-b border-sidebar-border/80 bg-background">
             <div className="mx-auto flex h-14 items-center justify-between px-4">
-                <Link href={dashboard()} prefetch className="flex items-center space-x-2">
-                    <AppLogo />
-                </Link>
+                <div className="flex items-center space-x-1">
+                    {canGoBack && page.url !== '/dashboard' && page.url !== '/' && (
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => window.history.back()}
+                            className="mr-2 rounded-full text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:hover:text-white dark:hover:bg-neutral-800"
+                            title="Geri Dön"
+                        >
+                            <ArrowLeft className="h-5 w-5" />
+                        </Button>
+                    )}
+                    <Link href={dashboard()} prefetch className="flex items-center space-x-2">
+                        <AppLogo />
+                    </Link>
+                </div>
 
                 <div className="flex items-center space-x-2">
                     <form onSubmit={handleSearch} className="relative flex items-center space-x-1 mr-2 hidden md:flex">
