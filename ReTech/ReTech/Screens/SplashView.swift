@@ -26,7 +26,7 @@ struct SplashView: View {
                 }
                 
                 // App Name
-                Text("Öz Turucnu")
+                Text("Öz Turuncu")
                     .font(.system(size: 36, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 2)
