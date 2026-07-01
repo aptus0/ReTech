@@ -34,7 +34,7 @@ class MobileTransactionController extends Controller
                 'user_id' => $request->user()->id ?? null,
                 'type' => $difference > 0 ? 'in' : 'out',
                 'quantity' => abs($difference),
-                'notes' => 'Mobil Sayım Düzenlemesi',
+                'description' => 'Mobil Sayım Düzenlemesi',
             ]);
 
             $product->current_stock = $newStock;
@@ -68,7 +68,7 @@ class MobileTransactionController extends Controller
                     'id' => $mov->id,
                     'type' => $mov->type,
                     'quantity' => $mov->quantity,
-                    'notes' => $mov->notes,
+                    'notes' => $mov->description,
                     'date' => $mov->created_at->format('d.m.Y H:i'),
                     'product_name' => $mov->product ? $mov->product->name : 'Bilinmeyen Ürün',
                     'barcode' => $mov->product ? ($mov->product->barcode ?? $mov->product->code) : '',
