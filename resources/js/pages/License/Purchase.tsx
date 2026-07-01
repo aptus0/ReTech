@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ArrowLeft, Check, Zap, CreditCard, Landmark, Copy, CheckCircle2, Clock, Phone } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 import AppLogo from '@/components/app-logo';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
@@ -33,6 +33,7 @@ export default function Purchase() {
             
             updateTimer();
             const interval = setInterval(updateTimer, 1000);
+
             return () => clearInterval(interval);
         }
     }, [pending_request]);
@@ -50,6 +51,7 @@ export default function Purchase() {
     const formatTime = (seconds: number) => {
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
+
         return `${m}:${s.toString().padStart(2, '0')}`;
     };
 

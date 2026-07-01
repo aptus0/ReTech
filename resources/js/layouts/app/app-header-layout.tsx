@@ -5,12 +5,12 @@ import { AppContent } from '@/components/app-content';
 import { AppHeader } from '@/components/app-header';
 import { AppShell } from '@/components/app-shell';
 import { BottomAppBar } from '@/components/bottom-app-bar';
-import { StatusBar } from '@/components/status-bar';
 import { LicenseGuard } from '@/components/license-guard';
 import { OnboardingTour } from '@/components/onboarding-tour';
+import { StatusBar } from '@/components/status-bar';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import type { AppLayoutProps } from '@/types';
 
 export default function AppHeaderLayout({
@@ -43,8 +43,10 @@ export default function AppHeaderLayout({
 
     useEffect(() => {
         const kioskEnabled = localStorage.getItem('retech_kiosk_mode') === 'true';
+
         if (kioskEnabled) {
             setIsKioskMode(true);
+
             if (!document.fullscreenElement) {
                 setNeedsFullscreenClick(true);
             }
@@ -56,13 +58,20 @@ export default function AppHeaderLayout({
             const width = window.innerWidth;
             
             if (resolution === 'Auto') {
-                if (width <= 1024) scale = 0.8;
-                else if (width <= 1366) scale = 0.9;
-                else scale = 1;
+                if (width <= 1024) {
+scale = 0.8;
+} else if (width <= 1366) {
+scale = 0.9;
+} else {
+scale = 1;
+}
             } else {
                 const targetWidth = parseInt(resolution.split('x')[0]);
                 scale = width / targetWidth;
-                if (scale > 1.5) scale = 1.5; 
+
+                if (scale > 1.5) {
+scale = 1.5;
+} 
             }
             
             // Use fontSize for Tailwind rem scaling instead of CSS zoom to prevent Radix UI Dropdown bugs
@@ -99,6 +108,7 @@ export default function AppHeaderLayout({
 
     const handleUnlockKiosk = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (kioskPassword === '123456') {
             localStorage.setItem('retech_kiosk_mode', 'false');
             setIsKioskMode(false);
@@ -157,15 +167,9 @@ export default function AppHeaderLayout({
             <div className="flex flex-col w-full z-50 fixed top-0">
                 <StatusBar />
                 <AppHeader />
-                {flash?.license_warning && (
-                    <div className="bg-orange-500 text-white text-xs font-bold px-4 py-1.5 flex items-center justify-center shadow-md animate-in slide-in-from-top">
-                        <svg className="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                        {flash.license_warning}
-                    </div>
-                )}
             </div>
-            {/* Added padding top to account for StatusBar(32px) + AppHeader(56px) + Warning(28px) = 116px */}
-            <div className={`pb-[80px] ${flash?.license_warning ? 'pt-[116px]' : 'pt-[88px]'}`}>
+            {/* Added padding top to account for StatusBar(32px) + AppHeader(56px) = 88px */}
+            <div className="pb-[80px] pt-[88px]">
                 <AppContent variant="header">{children}</AppContent>
             </div>
             <BottomAppBar />

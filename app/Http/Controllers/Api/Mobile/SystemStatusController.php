@@ -3,18 +3,19 @@
 namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 
 class SystemStatusController extends Controller
 {
     public function index()
     {
         $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
-        
+
         // RAM Usage
         $ramPercent = 0;
         if ($isWindows) {
             @exec('wmic OS get FreePhysicalMemory,TotalVisibleMemorySize /Value', $output);
-            if (!empty($output)) {
+            if (! empty($output)) {
                 $free = 0;
                 $total = 0;
                 foreach ($output as $line) {
@@ -33,7 +34,7 @@ class SystemStatusController extends Controller
             // Mac/Linux
             $free = shell_exec('free -m 2>/dev/null | grep Mem');
             if ($free) {
-                $free_arr = explode(" ", preg_replace('/\s+/', ' ', $free));
+                $free_arr = explode(' ', preg_replace('/\s+/', ' ', $free));
                 $total = $free_arr[1] ?? 0;
                 $used = $free_arr[2] ?? 0;
                 if ($total > 0) {
@@ -60,7 +61,9 @@ class SystemStatusController extends Controller
         if (function_exists('sys_getloadavg')) {
             $load = sys_getloadavg();
             $cpuPercent = round($load[0] * 10, 1); // rough estimate
-            if ($cpuPercent > 100) $cpuPercent = 100;
+            if ($cpuPercent > 100) {
+                $cpuPercent = 100;
+            }
         }
 
         // Network IPs
@@ -69,13 +72,13 @@ class SystemStatusController extends Controller
             if ($isWindows) {
                 $internalIp = gethostbyname(gethostname());
             } else {
-                $macIp = trim(shell_exec("ipconfig getifaddr en0 2>/dev/null"));
+                $macIp = trim(shell_exec('ipconfig getifaddr en0 2>/dev/null'));
                 $internalIp = $macIp ?: trim(shell_exec("hostname -I | awk '{print $1}' 2>/dev/null"));
             }
         }
-        
+
         // External IP (cached for 10 minutes to avoid rate limits)
-        $externalIp = \Illuminate\Support\Facades\Cache::remember('external_ip', 600, function () {
+        $externalIp = Cache::remember('external_ip', 600, function () {
             try {
                 return trim(file_get_contents('https://ifconfig.me/ip'));
             } catch (\Exception $e) {
@@ -87,7 +90,7 @@ class SystemStatusController extends Controller
             'cpu' => $cpuPercent,
             'ram' => $ramPercent,
             'internal_ip' => $internalIp,
-            'external_ip' => $externalIp
+            'external_ip' => $externalIp,
         ]);
     }
 }

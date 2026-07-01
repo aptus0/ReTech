@@ -27,3 +27,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+print-service/bin/
+print-service/obj/
+*.zip
+*.exe

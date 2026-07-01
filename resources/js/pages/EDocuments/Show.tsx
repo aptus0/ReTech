@@ -1,14 +1,14 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Download, FileImage, FileText, Printer, Send, ShieldCheck } from 'lucide-react';
-import { useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { toast } from 'sonner';
+import { ArrowLeft, Download, FileImage, FileText, Printer, Send, ShieldCheck } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/app-layout';
 
 export default function Show({ invoice, companySettings }: { invoice: any, companySettings: any }) {
@@ -18,7 +18,9 @@ export default function Show({ invoice, companySettings }: { invoice: any, compa
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleDownloadPDF = async () => {
-        if (!invoiceRef.current) return;
+        if (!invoiceRef.current) {
+return;
+}
         
         const promise = new Promise(async (resolve, reject) => {
             try {
@@ -55,7 +57,9 @@ export default function Show({ invoice, companySettings }: { invoice: any, compa
     };
 
     const handleDownloadPNG = async () => {
-        if (!invoiceRef.current) return;
+        if (!invoiceRef.current) {
+return;
+}
         
         const promise = new Promise(async (resolve, reject) => {
             try {
@@ -92,6 +96,7 @@ export default function Show({ invoice, companySettings }: { invoice: any, compa
         
         if (smsCode !== '123456') {
             toast.error('Hatalı SMS kodu! Test için "123456" giriniz.');
+
             return;
         }
 
@@ -241,23 +246,7 @@ export default function Show({ invoice, companySettings }: { invoice: any, compa
                             </div>
 
                             <div className="w-[30%] flex justify-end">
-                                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-32 h-32">
-                                    <circle cx="100" cy="100" r="96" fill="none" stroke="#2e3192" strokeWidth="4" />
-                                    
-                                    <path id="top-curve" d="M 20 100 A 80 80 0 0 1 180 100" fill="transparent" />
-                                    <text fill="#2e3192" fontSize="16" fontWeight="bold" fontFamily="sans-serif">
-                                        <textPath href="#top-curve" startOffset="50%" textAnchor="middle">T.C. Hazine ve Maliye Bakanlığı</textPath>
-                                    </text>
-                                    
-                                    <path id="bottom-curve" d="M 180 100 A 80 80 0 0 1 20 100" fill="transparent" />
-                                    <text fill="#ed1c24" fontSize="18" fontWeight="bold" fontFamily="sans-serif">
-                                        <textPath href="#bottom-curve" startOffset="50%" textAnchor="middle">Gelir İdaresi Başkanlığı</textPath>
-                                    </text>
-                                    
-                                    <path d="M 125 70 A 44 44 0 1 0 144 100 H 100" fill="none" stroke="#ed1c24" strokeWidth="24" strokeLinecap="round" strokeLinejoin="round" />
-                                    <circle cx="100" cy="56" r="12" fill="#ed1c24" />
-                                    <text x="100" y="118" fontSize="48" fontWeight="900" fontFamily="sans-serif" fill="#ed1c24" textAnchor="middle">GiB</text>
-                                </svg>
+                                <img src="/images/gib_logo.png" alt="GİB" className="w-32 h-auto object-contain" />
                             </div>
                         </div>
 

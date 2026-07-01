@@ -13,7 +13,7 @@ class SystemController extends Controller
             'app' => 'Re Tech',
             'server' => 'Local Server',
             'version' => '1.0.0',
-            'time' => now()->toDateTimeString()
+            'time' => now()->toDateTimeString(),
         ]);
     }
 }

@@ -13,6 +13,8 @@ import SettingsLayout from '@/layouts/settings/layout';
 
 export default function Index({ printers }: { printers: any[] }) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [localPrinters, setLocalPrinters] = useState<any[]>([]);
+    const [isScanning, setIsScanning] = useState(false);
     
     const { data, setData, post, processing, reset } = useForm({
         name: '',
@@ -40,6 +42,21 @@ export default function Index({ printers }: { printers: any[] }) {
                 reset();
             }
         });
+    };
+
+    const scanPrinters = async () => {
+        setIsScanning(true);
+        try {
+            const printServiceUrl = `http://${window.location.hostname}:8080/printers/`;
+            const res = await fetch(printServiceUrl);
+            const data = await res.json();
+            setLocalPrinters(data || []);
+            toast.success(`${data.length} adet yazıcı bulundu!`);
+        } catch (error) {
+            toast.error('ReTech Print Service çalışmıyor olabilir. Lütfen EXE uygulamasının arka planda çalıştığından emin olun.');
+        } finally {
+            setIsScanning(false);
+        }
     };
 
     const handleDelete = (id: number) => {
@@ -76,9 +93,55 @@ export default function Index({ printers }: { printers: any[] }) {
                                             <Label>Yazıcı Tanımı (Örn: Depo Yazıcısı)</Label>
                                             <Input required value={data.name} onChange={e => setData('name', e.target.value)} />
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label>İşletim Sistemi Yazıcı Adı (QZ Tray için)</Label>
-                                            <Input required value={data.printer_name} onChange={e => setData('printer_name', e.target.value)} placeholder="TSC TTP-244CE" />
+                                        <div className="space-y-2 col-span-2 p-4 bg-neutral-50 dark:bg-neutral-900 border rounded-lg">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <Label className="text-base font-semibold">Bağlantı Türü ve Yazıcı Adı</Label>
+                                                <Button type="button" variant="outline" size="sm" onClick={scanPrinters} disabled={isScanning}>
+                                                    {isScanning ? 'Taranıyor...' : 'Yerel Yazıcıları Tara'}
+                                                </Button>
+                                            </div>
+                                            
+                                            {localPrinters.length > 0 && (
+                                                <div className="mb-4">
+                                                    <Label>Bulunan Yazıcılar (Seçiniz)</Label>
+                                                    <Select onValueChange={(val) => {
+                                                        const p = localPrinters.find(x => x.Name === val);
+                                                        if(p) {
+                                                            setData(prev => ({
+                                                                ...prev,
+                                                                printer_name: p.Name,
+                                                                connection_type: p.Type === 'COM' ? 'COM' : 'USB'
+                                                            }));
+                                                        }
+                                                    }}>
+                                                        <SelectTrigger><SelectValue placeholder="Taranan listeden yazıcı seçin" /></SelectTrigger>
+                                                        <SelectContent>
+                                                            {localPrinters.map((p, i) => (
+                                                                <SelectItem key={i} value={p.Name}>
+                                                                    [{p.Type}] {p.Name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            )}
+
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <Label>Bağlantı Türü</Label>
+                                                    <Select value={data.connection_type} onValueChange={v => setData('connection_type', v)}>
+                                                        <SelectTrigger><SelectValue/></SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="USB">USB / Yazıcı Adı</SelectItem>
+                                                            <SelectItem value="COM">Seri Port (COM)</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Yazıcı Port Adı / İşletim Sistemi Adı</Label>
+                                                    <Input required value={data.printer_name} onChange={e => setData('printer_name', e.target.value)} placeholder="COM3 veya TSC TE244" />
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="space-y-2">
                                             <Label>Marka</Label>

@@ -9,6 +9,7 @@ use App\Http\Controllers\CashMovementController;
 use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerNoteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DecisionReportController;
 use App\Http\Controllers\EDocumentController;
@@ -22,7 +23,6 @@ use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\UnitController;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -48,9 +48,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Customers (Cari)
     Route::post('customers/api/store', [CustomerController::class, 'apiStore'])->name('customers.api.store');
     Route::resource('customers', CustomerController::class);
-    Route::post('customers/{customer}/notes', [\App\Http\Controllers\CustomerNoteController::class, 'store'])->name('customers.notes.store');
-    Route::put('customer-notes/{customerNote}', [\App\Http\Controllers\CustomerNoteController::class, 'update'])->name('customer-notes.update');
-    Route::delete('customer-notes/{customerNote}', [\App\Http\Controllers\CustomerNoteController::class, 'destroy'])->name('customer-notes.destroy');
+    Route::post('customers/{customer}/notes', [CustomerNoteController::class, 'store'])->name('customers.notes.store');
+    Route::put('customer-notes/{customerNote}', [CustomerNoteController::class, 'update'])->name('customer-notes.update');
+    Route::delete('customer-notes/{customerNote}', [CustomerNoteController::class, 'destroy'])->name('customer-notes.destroy');
     Route::post('customers/{customer}/collect', [CustomerController::class, 'collect'])->name('customers.collect');
 
     // Inventory

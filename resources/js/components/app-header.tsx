@@ -2,13 +2,13 @@ import { Link, usePage, router } from '@inertiajs/react';
 import { ArrowLeft, Search, Zap, ScanBarcode, PackagePlus, Users, Receipt, Wallet, Layers, Info } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AppLogo from '@/components/app-logo';
+import { onboardingEventTarget } from '@/components/onboarding-tour';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
 import { dashboard } from '@/routes';
-import { onboardingEventTarget } from '@/components/onboarding-tour';
 
 export function AppHeader() {
     const page = usePage();
@@ -23,6 +23,7 @@ export function AppHeader() {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (searchTerm.trim()) {
             router.get('/products', { search: searchTerm });
             setSearchTerm('');

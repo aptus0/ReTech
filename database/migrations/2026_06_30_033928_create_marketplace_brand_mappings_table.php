@@ -12,12 +12,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('marketplace_account_id')->constrained('marketplace_accounts')->onDelete('cascade');
             $table->foreignId('local_brand_id')->constrained('brands')->onDelete('cascade');
-            
+
             $table->string('marketplace_brand_id');
             $table->string('marketplace_brand_name');
-            
+
             $table->timestamps();
-            
+
             $table->unique(['marketplace_account_id', 'local_brand_id'], 'mk_acc_brand_unique');
         });
     }

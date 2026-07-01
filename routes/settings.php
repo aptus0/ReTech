@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Settings\MobileAppController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use App\Http\Controllers\Settings\StoreSettingsController;
+use App\Http\Controllers\UserController;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
 
@@ -33,8 +35,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('settings/license', 'settings/license')->name('settings.license');
 
     Route::prefix('settings')->name('settings.')->group(function () {
-        Route::resource('users', \App\Http\Controllers\UserController::class)->except(['show']);
-        Route::get('mobile-app', [\App\Http\Controllers\Settings\MobileAppController::class, 'index'])->name('mobile-app');
+        Route::resource('users', UserController::class)->except(['show']);
+        Route::get('mobile-app', [MobileAppController::class, 'index'])->name('mobile-app');
     });
 });
 

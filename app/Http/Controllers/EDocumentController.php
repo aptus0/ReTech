@@ -56,11 +56,34 @@ class EDocumentController extends Controller
     {
         $invoice->load(['customer', 'items', 'cashMovements.register']);
 
+        $logoUrl = Setting::get('store_logo');
+        $logoBase64 = null;
+        if ($logoUrl) {
+            try {
+                // Determine if it's a relative path or absolute URL
+                $fetchUrl = $logoUrl;
+                if (!filter_var($logoUrl, FILTER_VALIDATE_URL)) {
+                    $fetchUrl = public_path($logoUrl);
+                }
+
+                $logoData = @file_get_contents($fetchUrl);
+                if ($logoData) {
+                    $type = pathinfo($fetchUrl, PATHINFO_EXTENSION);
+                    if (!$type) $type = 'png';
+                    $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($logoData);
+                } else {
+                    $logoBase64 = $logoUrl;
+                }
+            } catch (\Exception $e) {
+                $logoBase64 = $logoUrl;
+            }
+        }
+
         return Inertia::render('EDocuments/Show', [
             'invoice' => $invoice,
             'companySettings' => [
                 'company_name' => Setting::get('company_name', 'Bilinmeyen Firma'),
-                'store_logo' => Setting::get('store_logo'),
+                'store_logo' => $logoBase64,
                 'tax_office' => Setting::get('tax_office', ''),
                 'tax_number' => Setting::get('tax_number', ''),
                 'address' => Setting::get('address', ''),
@@ -69,7 +92,7 @@ class EDocumentController extends Controller
                 'phone' => Setting::get('phone', ''),
                 'email' => Setting::get('email', ''),
                 'website' => Setting::get('website', ''),
-            ]
+            ],
         ]);
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -79,10 +80,11 @@ class CategoryController extends Controller
             $category->delete();
 
             return redirect()->back()->with('success', 'Kategori silindi.');
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             if ($e->getCode() == 23000) {
                 return redirect()->back()->withErrors(['error' => 'Bu kategori ürünlerde kullanıldığı için silinemez.']);
             }
+
             return redirect()->back()->withErrors(['error' => 'Kategori silinirken bir hata oluştu.']);
         }
     }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 export const onboardingEventTarget = new EventTarget();
 
@@ -39,6 +39,7 @@ export function OnboardingTour() {
     useEffect(() => {
         // Otomatik başlama kontrolü
         const isCompleted = localStorage.getItem('retech_onboarding_completed');
+
         if (!isCompleted) {
             setIsOpen(true);
         }
@@ -68,7 +69,9 @@ export function OnboardingTour() {
         setIsOpen(false);
     };
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+return null;
+}
 
     const step = TOUR_STEPS[currentStep];
 

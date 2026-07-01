@@ -55,7 +55,7 @@ class BarcodePrintController extends Controller
 
             $printItems = [];
 
-            if (!empty($validated['items'])) {
+            if (! empty($validated['items'])) {
                 foreach ($validated['items'] as $item) {
                     $product = Product::findOrFail($item['product_id']);
                     $printItems[] = [
@@ -68,12 +68,12 @@ class BarcodePrintController extends Controller
                         'copies' => $item['copies'],
                     ];
                 }
-            } elseif (!empty($validated['barcode'])) {
+            } elseif (! empty($validated['barcode'])) {
                 $product = Product::where('barcode', $validated['barcode'])
                     ->orWhere('code', $validated['barcode'])
                     ->first();
 
-                if (!$product) {
+                if (! $product) {
                     return response()->json(['success' => false, 'message' => 'Ürün bulunamadı'], 404);
                 }
 
@@ -92,52 +92,22 @@ class BarcodePrintController extends Controller
 
             $rawCommand = $printService->generateRawCommands($printer, $schema, $printItems);
 
-            // Print directly via USB
             $printerName = $printer->printer_name;
-            $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
-            
-            if ($isWindows) {
-                // Windows Printer Check via CMD
-                $wmicQuery = 'wmic printer where "Name=\'' . str_replace("'", "", $printerName) . '\'" get Name,PortName,PrinterState,PrinterStatus 2>&1';
-                $checkPrinter = shell_exec($wmicQuery);
-                
-                // If wmic returns "No Instance(s) Available." or doesn't find the name
-                if (strpos($checkPrinter, 'No Instance') !== false || stripos($checkPrinter, $printerName) === false) {
-                     return response()->json([
-                         'success' => false,
-                         'message' => 'Yazıcı Windows Driverları arasında bulunamadı: ' . $printerName
-                     ], 500);
-                }
-                
-                // If it's found, check if it's on USB or COM
-                if (stripos($checkPrinter, 'USB') === false && stripos($checkPrinter, 'COM') === false) {
-                     return response()->json([
-                         'success' => false,
-                         'message' => 'Yazıcı USB veya COM portuna bağlı değil: ' . $printerName
-                     ], 500);
-                }
-                
-                $tmpFile = tempnam(sys_get_temp_dir(), 'print_');
-                file_put_contents($tmpFile, $rawCommand);
-                // Print using copy command in Windows
-                exec("copy /B " . escapeshellarg($tmpFile) . " " . escapeshellarg("\\\\localhost\\" . $printerName));
-                @unlink($tmpFile);
-                
-            } else {
-                // Mac/Linux Printer Check
-                $checkPrinter = shell_exec("lpstat -p " . escapeshellarg($printerName) . " 2>&1");
-                if (strpos($checkPrinter, 'Unknown destination') !== false || strpos($checkPrinter, 'Not connected') !== false) {
-                     return response()->json([
-                         'success' => false,
-                         'message' => 'Yazıcı USB ile takılı değil veya sistemde bulunamadı: ' . $printerName
-                     ], 500);
-                }
 
-                $tmpFile = tempnam(sys_get_temp_dir(), 'print_');
-                file_put_contents($tmpFile, $rawCommand);
-                exec("lpr -P " . escapeshellarg($printerName) . " -o raw " . escapeshellarg($tmpFile));
-                @unlink($tmpFile);
-            }
+            // Save to Print Queue instead of direct printing
+            $queueIds = [];
+            
+            // We can either create 1 queue record with all commands, or if it's already a single string, just 1 record.
+            $queue = \App\Models\BarcodePrintQueue::create([
+                'printer_name' => $printerName,
+                'connection_type' => $printer->connection_type, // 'USB' or 'COM'
+                'raw_command' => $rawCommand,
+                'status' => 'pending',
+                'product_id' => $product->id ?? null,
+                'copies' => $validated['quantity'] ?? 1,
+            ]);
+            
+            $queueIds[] = $queue->id;
 
             return response()->json([
                 'success' => true,

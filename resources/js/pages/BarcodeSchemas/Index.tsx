@@ -138,6 +138,7 @@ export default function Index({ schemas }: { schemas: any[] }) {
                                 <div className={`flex items-end justify-center gap-0.5 w-full bg-white px-2 ${isLarge ? 'h-16' : 'h-10'} overflow-hidden`}>
                                     {Array.from({length: isLarge ? 40 : 20}).map((_, i) => {
                                         const width = [1, 2, 3, 4][(i * 13) % 4];
+
                                         return <div key={i} className="bg-neutral-900 dark:bg-neutral-800 h-full flex-shrink-0" style={{ width: `${width}px` }} />
                                     })}
                                 </div>

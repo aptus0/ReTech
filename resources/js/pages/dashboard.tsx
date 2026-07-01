@@ -1,11 +1,11 @@
-import { Head, Link, useForm, router } from '@inertiajs/react';
-import { useState, useEffect, useRef } from 'react';
-import FullCalendar from '@fullcalendar/react';
+import trLocale from '@fullcalendar/core/locales/tr';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
-import trLocale from '@fullcalendar/core/locales/tr';
+import FullCalendar from '@fullcalendar/react';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import { Head, Link, useForm, router } from '@inertiajs/react';
+import { useState, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
@@ -33,6 +33,7 @@ export default function Dashboard({ stats, latestMovements, calendarEvents }: { 
         };
         fetchStatus(); // initial call
         const interval = setInterval(fetchStatus, 3000); // 3 seconds
+
         return () => clearInterval(interval);
     }, []);
     
@@ -45,6 +46,7 @@ export default function Dashboard({ stats, latestMovements, calendarEvents }: { 
         };
         fetchStatus(); // initial call
         const interval = setInterval(fetchStatus, 3000); // 3 seconds
+
         return () => clearInterval(interval);
     }, []);
 
@@ -279,7 +281,10 @@ export default function Dashboard({ stats, latestMovements, calendarEvents }: { 
                                 ➕ Yeni Not Ekle
                             </button>
                             <button className="w-full text-left px-4 py-2.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-sm font-medium transition-colors" onClick={() => {
-                                if(calendarRef.current) calendarRef.current.getApi().today();
+                                if(calendarRef.current) {
+calendarRef.current.getApi().today();
+}
+
                                 setContextMenu({ ...contextMenu, show: false }); 
                             }}>
                                 📅 Bugüne Git

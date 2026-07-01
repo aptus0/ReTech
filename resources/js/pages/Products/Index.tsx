@@ -6,11 +6,11 @@ import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from '@/components/ui/sheet';
 import AppLayout from '@/layouts/app-layout';
 import type {BreadcrumbItem} from '@/types';
 
@@ -60,7 +60,9 @@ export default function Index({ products, filters, categories, brands, units }: 
     };
 
     const handleBulkDelete = () => {
-        if (!confirm('Seçili ürünleri silmek istediğinize emin misiniz?')) return;
+        if (!confirm('Seçili ürünleri silmek istediğinize emin misiniz?')) {
+return;
+}
         
         router.delete('/products/bulk-delete', {
             data: { ids: selectedIds },
@@ -72,7 +74,10 @@ export default function Index({ products, filters, categories, brands, units }: 
     };
 
     const handleBulkBarcode = () => {
-        if (selectedIds.length === 0) return;
+        if (selectedIds.length === 0) {
+return;
+}
+
         router.get('/products/barcode-print', { ids: selectedIds.join(',') });
     };
 

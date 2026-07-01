@@ -12,13 +12,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('marketplace_account_id')->constrained('marketplace_accounts')->onDelete('cascade');
             $table->foreignId('marketplace_order_id')->constrained('marketplace_orders')->onDelete('cascade');
-            
+
             $table->string('external_return_id');
             $table->string('status');
             $table->string('reason')->nullable();
-            
+
             $table->json('raw_payload')->nullable();
-            
+
             $table->timestamps();
         });
     }

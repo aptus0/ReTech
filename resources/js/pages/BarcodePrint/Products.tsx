@@ -1,9 +1,9 @@
 import { Head, useForm } from '@inertiajs/react';
+import axios from 'axios';
 import { Printer, RefreshCw, Layers, CheckCircle2 } from 'lucide-react';
+import qz from 'qz-tray';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import axios from 'axios';
-import qz from 'qz-tray';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -37,18 +37,23 @@ export default function Products({ products, printers, schemas }: { products: an
     };
 
     const updateCopies = (productId: number, copies: number) => {
-        if (copies < 1) copies = 1;
+        if (copies < 1) {
+copies = 1;
+}
+
         setSelectedProducts(selectedProducts.map(p => p.product_id === productId ? { ...p, copies } : p));
     };
 
     const handlePrint = async () => {
         if (selectedProducts.length === 0) {
             toast.error('Lütfen barkodunu yazdırmak istediğiniz ürünleri seçin.');
+
             return;
         }
 
         if (!data.printer_id || !data.schema_id) {
             toast.error('Lütfen bir yazıcı ve barkod şeması seçin.');
+
             return;
         }
 
@@ -72,6 +77,7 @@ export default function Products({ products, printers, schemas }: { products: an
                     if (!qz.websocket.isActive()) {
                         await qz.websocket.connect();
                     }
+
                     const config = qz.configs.create(result.printer_name);
                     const printData = [
                         { type: 'raw', format: 'command', data: result.raw_command }

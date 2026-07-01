@@ -8,7 +8,9 @@ use App\Models\Product;
 class MarketplaceResult
 {
     public bool $success;
+
     public ?string $message;
+
     public mixed $data;
 
     public function __construct(bool $success, ?string $message = null, mixed $data = null)

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 
 export function LicenseGuard() {
     const [isActivationModalOpen, setIsActivationModalOpen] = useState(false);
@@ -11,13 +11,16 @@ export function LicenseGuard() {
 
     useEffect(() => {
         const key = localStorage.getItem('retech_activation_key');
+
         if (key && key.length > 5) {
             setIsTrial(false);
+
             return;
         }
 
         // Handle Trial Logic
         let trialStartStr = localStorage.getItem('retech_trial_start');
+
         if (!trialStartStr) {
             trialStartStr = new Date().toISOString();
             localStorage.setItem('retech_trial_start', trialStartStr);
@@ -41,6 +44,7 @@ export function LicenseGuard() {
 
     const handleActivation = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (activationKey.length > 5) {
             localStorage.setItem('retech_activation_key', activationKey);
             setIsActivationModalOpen(false);

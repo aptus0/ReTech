@@ -1,11 +1,11 @@
+import { usePage } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { QuickSearchModal } from '@/components/QuickSearchModal';
+import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
-import { usePage } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
 
 export function AppSidebarHeader({
     breadcrumbs = [],

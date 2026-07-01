@@ -21,6 +21,7 @@ export default function ComingSoon() {
 
             if (distance < 0) {
                 clearInterval(timer);
+
                 return;
             }
 

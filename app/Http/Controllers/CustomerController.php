@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
-use App\Models\Customer;
-use App\Models\CashRegister;
 use App\Models\CashMovement;
+use App\Models\CashRegister;
+use App\Models\Customer;
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -56,7 +57,7 @@ class CustomerController extends Controller
         return response()->json([
             'success' => true,
             'customer' => $customer,
-            'message' => 'Cari başarıyla oluşturuldu.'
+            'message' => 'Cari başarıyla oluşturuldu.',
         ]);
     }
 
@@ -65,7 +66,7 @@ class CustomerController extends Controller
         $customer->load('customerNotes.user');
         $cashMovements = CashMovement::where('account_id', $customer->id)->with('register')->latest('movement_date')->get();
         $registers = CashRegister::where('is_active', true)->get();
-        $paymentMethods = \App\Models\PaymentMethod::where('is_active', true)->get();
+        $paymentMethods = PaymentMethod::where('is_active', true)->get();
 
         return inertia('Customers/Show', [
             'customer' => $customer,

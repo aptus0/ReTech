@@ -1,11 +1,11 @@
 import { Head } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import SettingsLayout from '@/layouts/settings/layout';
 import Heading from '@/components/heading';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import SettingsLayout from '@/layouts/settings/layout';
 
 const RESOLUTIONS = [
     { value: 'Auto', label: 'Otomatik (Duyarlı)' },

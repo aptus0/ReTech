@@ -12,15 +12,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('marketplace_order_id')->constrained('marketplace_orders')->onDelete('cascade');
             $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
-            
+
             $table->string('external_sku')->nullable();
             $table->string('barcode')->nullable();
-            
+
             $table->integer('quantity');
             $table->decimal('price', 10, 2);
-            
+
             $table->string('status')->nullable();
-            
+
             $table->timestamps();
         });
     }

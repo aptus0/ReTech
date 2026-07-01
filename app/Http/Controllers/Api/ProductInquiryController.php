@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Product;
 
 class ProductInquiryController extends Controller
 {
     public function show($barcode)
     {
-        $product = \App\Models\Product::where('barcode', $barcode)
+        $product = Product::where('barcode', $barcode)
             ->orWhere('code', $barcode)
             ->first();
 
-        if (!$product) {
+        if (! $product) {
             return response()->json(['message' => 'Ürün bulunamadı'], 404);
         }
 

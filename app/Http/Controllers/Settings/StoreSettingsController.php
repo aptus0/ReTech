@@ -54,12 +54,24 @@ class StoreSettingsController extends Controller
         Setting::set('tax_office', $request->tax_office);
         Setting::set('tax_number', $request->tax_number);
 
-        if ($request->has('phone')) Setting::set('phone', $request->phone);
-        if ($request->has('support_line')) Setting::set('support_line', $request->support_line);
-        if ($request->has('email')) Setting::set('email', $request->email);
-        if ($request->has('district')) Setting::set('district', $request->district);
-        if ($request->has('city')) Setting::set('city', $request->city);
-        if ($request->has('website')) Setting::set('website', $request->website);
+        if ($request->has('phone')) {
+            Setting::set('phone', $request->phone);
+        }
+        if ($request->has('support_line')) {
+            Setting::set('support_line', $request->support_line);
+        }
+        if ($request->has('email')) {
+            Setting::set('email', $request->email);
+        }
+        if ($request->has('district')) {
+            Setting::set('district', $request->district);
+        }
+        if ($request->has('city')) {
+            Setting::set('city', $request->city);
+        }
+        if ($request->has('website')) {
+            Setting::set('website', $request->website);
+        }
 
         if ($request->hasFile('store_logo')) {
             $path = $request->file('store_logo')->store('logos', 'public');

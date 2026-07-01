@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -54,8 +55,8 @@ class LicenseController extends Controller
         }
 
         return Inertia::render('License/Purchase', [
-            'is_expired' => !Storage::exists('license.key') && (14 - now()->diffInDays(\Carbon\Carbon::parse(Storage::get('install_date.txt')))) <= 0,
-            'pending_request' => $pendingRequest
+            'is_expired' => ! Storage::exists('license.key') && (14 - now()->diffInDays(Carbon::parse(Storage::get('install_date.txt')))) <= 0,
+            'pending_request' => $pendingRequest,
         ]);
     }
 
@@ -70,7 +71,7 @@ class LicenseController extends Controller
         Storage::put('license_pending.json', json_encode([
             'status' => 'pending',
             'phone' => $request->input('phone'),
-            'timestamp' => now()->timestamp
+            'timestamp' => now()->timestamp,
         ]));
 
         return redirect()->route('license.purchase');

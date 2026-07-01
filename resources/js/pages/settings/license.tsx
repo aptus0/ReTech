@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 export default function LicenseSettings() {
     const { license } = usePage().props as any;
 
-    if (!license) return null;
+    if (!license) {
+return null;
+}
 
     return (
         <>

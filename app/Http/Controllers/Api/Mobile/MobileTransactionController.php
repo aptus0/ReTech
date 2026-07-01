@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\StockMovement;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class MobileTransactionController extends Controller
 {
@@ -17,7 +16,7 @@ class MobileTransactionController extends Controller
     {
         $validated = $request->validate([
             'barcode' => 'required|string',
-            'counted_quantity' => 'required|integer|min:0'
+            'counted_quantity' => 'required|integer|min:0',
         ]);
 
         $product = Product::where('barcode', $validated['barcode'])
@@ -26,18 +25,18 @@ class MobileTransactionController extends Controller
 
         $oldStock = $product->current_stock;
         $newStock = $validated['counted_quantity'];
-        
+
         if ($oldStock != $newStock) {
             $difference = $newStock - $oldStock;
-            
+
             StockMovement::create([
                 'product_id' => $product->id,
                 'user_id' => $request->user()->id ?? null,
                 'type' => $difference > 0 ? 'in' : 'out',
                 'quantity' => abs($difference),
-                'notes' => 'Mobil Sayım Düzenlemesi'
+                'notes' => 'Mobil Sayım Düzenlemesi',
             ]);
-            
+
             $product->current_stock = $newStock;
             $product->save();
         }
@@ -46,7 +45,7 @@ class MobileTransactionController extends Controller
             'success' => true,
             'message' => 'Sayım kaydedildi',
             'old_stock' => $oldStock,
-            'new_stock' => $newStock
+            'new_stock' => $newStock,
         ]);
     }
 
@@ -55,9 +54,9 @@ class MobileTransactionController extends Controller
      */
     public function history(Request $request)
     {
-        $movements = StockMovement::with(['product' => function($query) {
-                $query->select('id', 'name', 'barcode', 'code');
-            }])
+        $movements = StockMovement::with(['product' => function ($query) {
+            $query->select('id', 'name', 'barcode', 'code');
+        }])
             ->orderBy('created_at', 'desc')
             ->take(20)
             ->get();
@@ -72,9 +71,9 @@ class MobileTransactionController extends Controller
                     'notes' => $mov->notes,
                     'date' => $mov->created_at->format('d.m.Y H:i'),
                     'product_name' => $mov->product ? $mov->product->name : 'Bilinmeyen Ürün',
-                    'barcode' => $mov->product ? ($mov->product->barcode ?? $mov->product->code) : ''
+                    'barcode' => $mov->product ? ($mov->product->barcode ?? $mov->product->code) : '',
                 ];
-            })
+            }),
         ]);
     }
 }

@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\CashMovement;
-use App\Models\Category;
 use App\Models\Invoice;
-use App\Models\InvoiceItem;
 use App\Models\OpenTransaction;
 use App\Models\Product;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DecisionReportController extends Controller
@@ -22,7 +20,7 @@ class DecisionReportController extends Controller
         // ==========================================
         // 1. KÂRLILIK VE FİNANSAL PERFORMANS (Son 30 Gün)
         // ==========================================
-        
+
         // Son 30 günlük ciro (sadece satış faturaları)
         $monthlySales = Invoice::where('type', 'sale')
             ->whereDate('created_at', '>=', $thirtyDaysAgo)
@@ -54,7 +52,7 @@ class DecisionReportController extends Controller
         // ==========================================
         // 2. STOK VE ENVANTER DEĞERLEMESİ
         // ==========================================
-        
+
         // Depodaki toplam sermaye (Maliyet)
         $inventoryCapital = Product::where('is_active', true)
             ->where('current_stock', '>', 0)
@@ -97,20 +95,20 @@ class DecisionReportController extends Controller
         $salesTrend = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
-            
+
             $dailySales = Invoice::where('type', 'sale')
                 ->whereDate('created_at', $date)
                 ->sum('grand_total');
-                
+
             $dailyCollections = CashMovement::where('type', 'collection')
                 ->whereDate('created_at', $date)
                 ->sum('amount');
-                
+
             $salesTrend[] = [
                 'name' => $date->translatedFormat('D'), // Pzt, Sal vb.
                 'fullDate' => $date->format('d M'),
                 'satis' => (float) $dailySales,
-                'tahsilat' => (float) $dailyCollections
+                'tahsilat' => (float) $dailyCollections,
             ];
         }
 
@@ -143,7 +141,7 @@ class DecisionReportController extends Controller
                 ],
                 'topSellers' => $topSellingProducts,
                 'trendData' => $salesTrend,
-            ]
+            ],
         ]);
     }
 }

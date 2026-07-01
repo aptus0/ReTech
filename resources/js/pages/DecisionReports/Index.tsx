@@ -4,12 +4,12 @@ import {
     CheckCircle, ListTree, Banknote, LineChart as LineChartIcon,
     ArrowUpRight, ArrowDownRight, Wallet, ShoppingBag
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import AppLayout from '@/layouts/app-layout';
 import { 
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
     ResponsiveContainer, LineChart, Line, Legend, AreaChart, Area
 } from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import AppLayout from '@/layouts/app-layout';
 
 export default function DecisionReports({ metrics }: any) {
     const { profitability, cashFlow, inventory, topSellers, trendData } = metrics;

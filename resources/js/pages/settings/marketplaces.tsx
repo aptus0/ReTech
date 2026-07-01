@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { Store, Plus, KeyRound, CheckCircle2, XCircle, Settings, RefreshCcw } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function MarketplacesSettings() {

@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\Controller;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\StockMovement;
-use App\Models\Category;
-use App\Models\Brand;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class MobileProductController extends Controller
 {
@@ -20,7 +19,7 @@ class MobileProductController extends Controller
         return response()->json([
             'success' => true,
             'categories' => Category::where('is_active', true)->orderBy('name')->get(['id', 'name']),
-            'brands' => Brand::where('is_active', true)->orderBy('name')->get(['id', 'name'])
+            'brands' => Brand::where('is_active', true)->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -42,9 +41,9 @@ class MobileProductController extends Controller
 
         // Auto-generate code if empty
         if (empty($validated['code'])) {
-            $validated['code'] = 'MOB-' . strtoupper(uniqid());
+            $validated['code'] = 'MOB-'.strtoupper(uniqid());
         }
-        
+
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('products', 'public');
@@ -70,14 +69,14 @@ class MobileProductController extends Controller
                 'user_id' => $request->user()->id ?? null,
                 'type' => 'in',
                 'quantity' => $validated['stock_quantity'],
-                'notes' => 'Mobil uygulamadan başlangıç stoğu'
+                'notes' => 'Mobil uygulamadan başlangıç stoğu',
             ]);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Ürün başarıyla eklendi',
-            'product' => $product
+            'product' => $product,
         ]);
     }
 
@@ -87,11 +86,11 @@ class MobileProductController extends Controller
     public function updatePrice(Request $request, $barcode)
     {
         $validated = $request->validate([
-            'price' => 'required|numeric|min:0'
+            'price' => 'required|numeric|min:0',
         ]);
 
         $product = Product::where('barcode', $barcode)->orWhere('code', $barcode)->firstOrFail();
-        
+
         $oldPrice = $product->sale_price;
         $product->sale_price = $validated['price'];
         $product->save();
@@ -100,7 +99,7 @@ class MobileProductController extends Controller
             'success' => true,
             'message' => 'Fiyat güncellendi',
             'old_price' => $oldPrice,
-            'new_price' => $product->sale_price
+            'new_price' => $product->sale_price,
         ]);
     }
 }

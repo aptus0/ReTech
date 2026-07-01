@@ -6,8 +6,13 @@ use App\Http\Middleware\LicenseCheckMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,11 +32,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->respond(function (\Illuminate\Http\Response|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\Response $response, Throwable $exception, Request $request) {
+        $exceptions->respond(function (Response|JsonResponse|RedirectResponse|Symfony\Component\HttpFoundation\Response $response, Throwable $exception, Request $request) {
             $status = $response->getStatusCode();
-            
+
             if (in_array($status, [403, 404, 500, 503])) {
-                \Illuminate\Support\Facades\Log::warning("Sistem Hatası - Kod: {$status}", [
+                Log::warning("Sistem Hatası - Kod: {$status}", [
                     'url' => $request->fullUrl(),
                     'method' => $request->method(),
                     'ip' => $request->ip(),
@@ -40,11 +45,11 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             if (! app()->environment(['local', 'testing']) && in_array($status, [500, 503, 404, 403])) {
-                return \Inertia\Inertia::render('Error', ['status' => $status])
+                return Inertia::render('Error', ['status' => $status])
                     ->toResponse($request)
                     ->setStatusCode($status);
             } elseif ($response->getStatusCode() === 404 && $request->header('X-Inertia')) {
-                return \Inertia\Inertia::render('Error', ['status' => 404])
+                return Inertia::render('Error', ['status' => 404])
                     ->toResponse($request)
                     ->setStatusCode(404);
             }

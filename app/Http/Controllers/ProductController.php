@@ -143,13 +143,13 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'ids' => 'required|array',
-            'ids.*' => 'exists:products,id'
+            'ids.*' => 'exists:products,id',
         ]);
 
         Product::whereIn('id', $validated['ids'])->delete();
 
         return redirect()->route('products.index')
-            ->with('success', count($validated['ids']) . ' ürün başarıyla silindi.');
+            ->with('success', count($validated['ids']).' ürün başarıyla silindi.');
     }
 
     public function toggleStatus(Product $product)

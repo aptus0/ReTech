@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CashRegister;
 use App\Models\OpenTransaction;
+use App\Models\PaymentMethod;
 use App\Services\Finance\CollectionService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -25,7 +26,7 @@ class OpenTransactionController extends Controller
 
         $transactions = $query->paginate(15);
         $registers = CashRegister::where('is_active', true)->get();
-        $paymentMethods = \App\Models\PaymentMethod::where('is_active', true)->get();
+        $paymentMethods = PaymentMethod::where('is_active', true)->get();
 
         return Inertia::render('OpenTransactions/Index', [
             'transactions' => $transactions,

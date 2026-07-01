@@ -1,13 +1,13 @@
 import { Head, useForm, router } from '@inertiajs/react';
+import axios from 'axios';
 import { Search, ShoppingCart, User, CreditCard, Banknote, Trash2, Tag, Calendar, BadgePercent, AlertTriangle, Package, UserPlus } from 'lucide-react';
 import { useState, useMemo } from 'react';
-import axios from 'axios';
 import { toast } from 'sonner';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/app-layout';
 
 export default function SalesFlow({ products, customers: initialCustomers, registers }: { products: any[], customers: any[], registers: any[] }) {
@@ -110,8 +110,10 @@ export default function SalesFlow({ products, customers: initialCustomers, regis
     const handleCreateCustomer = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmittingCustomer(true);
+
         try {
             const response = await axios.post('/customers/api/store', newCustomer);
+
             if (response.data.success) {
                 toast.success('Müşteri başarıyla oluşturuldu!');
                 const createdCustomer = response.data.customer;
@@ -132,6 +134,7 @@ export default function SalesFlow({ products, customers: initialCustomers, regis
 
         if (data.items.length === 0) {
             toast.error('Sepette ürün yok!');
+
             return;
         }
 

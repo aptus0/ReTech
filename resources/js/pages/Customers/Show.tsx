@@ -40,6 +40,7 @@ export default function Show({ customer, cashMovements, registers, paymentMethod
 
     const handleNoteSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (editingNoteId) {
             putNote(`/customer-notes/${editingNoteId}`, {
                 preserveScroll: true,
@@ -214,7 +215,9 @@ export default function Show({ customer, cashMovements, registers, paymentMethod
                             required
                         ></textarea>
                         <div className="flex justify-end gap-2">
-                            {editingNoteId && <Button type="button" variant="ghost" onClick={() => { setEditingNoteId(null); resetNote(); }}>İptal</Button>}
+                            {editingNoteId && <Button type="button" variant="ghost" onClick={() => {
+ setEditingNoteId(null); resetNote(); 
+}}>İptal</Button>}
                             <Button type="submit" disabled={noteProcessing} className="bg-orange-600 hover:bg-orange-700">{editingNoteId ? 'Güncelle' : 'Not Ekle'}</Button>
                         </div>
                     </form>
@@ -223,8 +226,14 @@ export default function Show({ customer, cashMovements, registers, paymentMethod
                         {customer.customer_notes?.length > 0 ? customer.customer_notes.map((note: any) => (
                             <div key={note.id} className="p-4 border rounded-lg bg-white dark:bg-neutral-950 shadow-sm relative group">
                                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                                    <button onClick={() => { setEditingNoteId(note.id); setNoteData('content', note.content); }} className="text-blue-500 hover:text-blue-700 p-1"><Edit2 className="w-4 h-4"/></button>
-                                    <button onClick={() => { if(confirm('Silmek istediğinize emin misiniz?')) deleteNote(`/customer-notes/${note.id}`); }} className="text-red-500 hover:text-red-700 p-1"><Trash2 className="w-4 h-4"/></button>
+                                    <button onClick={() => {
+ setEditingNoteId(note.id); setNoteData('content', note.content); 
+}} className="text-blue-500 hover:text-blue-700 p-1"><Edit2 className="w-4 h-4"/></button>
+                                    <button onClick={() => {
+ if(confirm('Silmek istediğinize emin misiniz?')) {
+deleteNote(`/customer-notes/${note.id}`);
+} 
+}} className="text-red-500 hover:text-red-700 p-1"><Trash2 className="w-4 h-4"/></button>
                                 </div>
                                 <div className="text-xs text-muted-foreground mb-2 flex items-center justify-between pr-16">
                                     <span className="font-medium text-orange-600">{note.user?.name || 'Kullanıcı'}</span>

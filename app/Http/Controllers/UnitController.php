@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Unit;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class UnitController extends Controller
@@ -54,11 +55,13 @@ class UnitController extends Controller
     {
         try {
             $unit->delete();
+
             return redirect()->back()->with('success', 'Birim silindi.');
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             if ($e->getCode() == 23000) {
                 return redirect()->back()->withErrors(['error' => 'Bu birim ürünlerde kullanıldığı için silinemez.']);
             }
+
             return redirect()->back()->withErrors(['error' => 'Birim silinirken bir hata oluştu.']);
         }
     }
