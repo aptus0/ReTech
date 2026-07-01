@@ -8,7 +8,7 @@ class APIClient {
     @AppStorage("authToken") private var authToken: String = ""
     
     func getBaseURL() -> String {
-        return serverURL.hasSuffix("/") ? String(serverURL.dropLast()) : serverURL
+        return ServerSettings.normalizedBaseURL(serverURL)
     }
     
     func request<T: Decodable>(
@@ -41,7 +41,7 @@ class APIClient {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        NetworkManager.shared.session.dataTask(with: request) { data, response, error in
             if let error = error {
                 DispatchQueue.main.async { completion(.failure(error)) }
                 return

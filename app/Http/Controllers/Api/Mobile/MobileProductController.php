@@ -49,6 +49,8 @@ class MobileProductController extends Controller
             $imagePath = $request->file('image')->store('products', 'public');
         }
 
+        $defaultUnit = \App\Models\Unit::first();
+
         $product = Product::create([
             'name' => $validated['name'],
             'barcode' => $validated['barcode'],
@@ -58,6 +60,7 @@ class MobileProductController extends Controller
             'current_stock' => $validated['stock_quantity'],
             'category_id' => $validated['category_id'] ?? null,
             'brand_id' => $validated['brand_id'] ?? null,
+            'unit_id' => $defaultUnit ? $defaultUnit->id : 1,
             'image' => $imagePath,
             'is_active' => true,
         ]);
@@ -69,7 +72,7 @@ class MobileProductController extends Controller
                 'user_id' => $request->user()->id ?? null,
                 'type' => 'in',
                 'quantity' => $validated['stock_quantity'],
-                'notes' => 'Mobil uygulamadan başlangıç stoğu',
+                'description' => 'Mobil uygulamadan başlangıç stoğu',
             ]);
         }
 

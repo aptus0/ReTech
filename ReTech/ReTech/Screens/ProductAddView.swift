@@ -1,5 +1,5 @@
 import SwiftUI
-import PhotosUI
+import UIKit
 
 struct CategoryModel: Codable, Hashable {
     let id: Int
@@ -33,8 +33,8 @@ struct ProductAddView: View {
     @State private var selectedCategoryId: Int?
     @State private var selectedBrandId: Int?
     
-    @State private var selectedItem: PhotosPickerItem? = nil
     @State private var selectedImage: UIImage? = nil
+    @State private var isShowingImagePicker = false
     
     @State private var isSaving = false
     @State private var isFetchingForm = false
@@ -79,7 +79,9 @@ struct ProductAddView: View {
                     Section(header: Text("Fotoğraf (Opsiyonel)")) {
                         HStack {
                             Spacer()
-                            PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()) {
+                            Button {
+                                isShowingImagePicker = true
+                            } label: {
                                 if let image = selectedImage {
                                     Image(uiImage: image)
                                         .resizable()
@@ -99,14 +101,7 @@ struct ProductAddView: View {
                                     .foregroundColor(.blue)
                                 }
                             }
-                            .onChange(of: selectedItem) { newItem in
-                                Task {
-                                    if let data = try? await newItem?.loadTransferable(type: Data.self),
-                                       let uiImage = UIImage(data: data) {
-                                        selectedImage = uiImage
-                                    }
-                                }
-                            }
+                            .buttonStyle(.plain)
                             Spacer()
                         }
                     }
@@ -181,6 +176,9 @@ struct ProductAddView: View {
         }
         .navigationTitle("Ürün Ekle")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $isShowingImagePicker) {
+            ImagePicker(selectedImage: $selectedImage)
+        }
     }
     
     private func fetchFormData() {
@@ -212,6 +210,8 @@ struct ProductAddView: View {
     }
     
     private func saveProduct() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        
         guard !name.isEmpty, let price = Double(salePrice.replacingOccurrences(of: ",", with: ".")), let stock = Int(stockQuantity) else {
             errorMessage = "Lütfen geçerli bir fiyat ve stok girin."
             return
@@ -290,7 +290,6 @@ struct ProductAddView: View {
                         self.salePrice = ""
                         self.stockQuantity = "1"
                         self.selectedImage = nil
-                        self.selectedItem = nil
                         self.selectedCategoryId = nil
                         self.selectedBrandId = nil
                         self.successMessage = nil
@@ -306,5 +305,46 @@ struct ProductAddView: View {
                 }
             }
         }.resume()
+    }
+}
+
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var selectedImage: UIImage?
+    @Environment(\.dismiss) private var dismiss
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.allowsEditing = true
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(selectedImage: $selectedImage, dismiss: dismiss)
+    }
+
+    final class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+        @Binding private var selectedImage: UIImage?
+        private let dismiss: DismissAction
+
+        init(selectedImage: Binding<UIImage?>, dismiss: DismissAction) {
+            self._selectedImage = selectedImage
+            self.dismiss = dismiss
+        }
+
+        func imagePickerController(
+            _ picker: UIImagePickerController,
+            didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+        ) {
+            selectedImage = (info[.editedImage] as? UIImage) ?? (info[.originalImage] as? UIImage)
+            dismiss()
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            dismiss()
+        }
     }
 }

@@ -1,9 +1,18 @@
 import { Head } from '@inertiajs/react';
-import { Smartphone, Wifi, QrCode, ScanLine, ShieldCheck, Zap, Download, ScanBarcode } from 'lucide-react';
+import { useState } from 'react';
+import { Smartphone, Wifi, QrCode, ScanLine, ShieldCheck, Zap, Download, ScanBarcode, Copy, Check } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
 export default function MobileApp({ serverIp, apiToken }: { serverIp: string, apiToken: string }) {
-    const qrData = JSON.stringify({ ip: serverIp, token: apiToken });
+    const [copiedField, setCopiedField] = useState<'server' | 'token' | null>(null);
+    const serverUrl = /^https?:\/\//i.test(serverIp) ? serverIp : `http://${serverIp}`;
+    const qrData = JSON.stringify({ ip: serverUrl, token: apiToken });
+
+    const copyToClipboard = async (value: string, field: 'server' | 'token') => {
+        await navigator.clipboard.writeText(value);
+        setCopiedField(field);
+        window.setTimeout(() => setCopiedField(null), 1600);
+    };
 
     return (
         <>
@@ -73,8 +82,15 @@ export default function MobileApp({ serverIp, apiToken }: { serverIp: string, ap
                                         <label className="font-semibold text-sm text-neutral-700 dark:text-neutral-300">Server URL / IP Adresi</label>
                                     </div>
                                     <div className="bg-neutral-50 dark:bg-neutral-950 font-mono p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 font-medium text-lg flex items-center justify-between">
-                                        <span>http://{serverIp}</span>
-                                        <div className="text-xs text-neutral-400 bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded">KOPYALA</div>
+                                        <span>{serverUrl}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => copyToClipboard(serverUrl, 'server')}
+                                            className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 px-2 py-1 rounded transition-colors"
+                                        >
+                                            {copiedField === 'server' ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                                            {copiedField === 'server' ? 'KOPYALANDI' : 'KOPYALA'}
+                                        </button>
                                     </div>
                                 </div>
                                 
@@ -82,9 +98,16 @@ export default function MobileApp({ serverIp, apiToken }: { serverIp: string, ap
                                     <div className="flex items-center justify-between mb-2">
                                         <label className="font-semibold text-sm text-neutral-700 dark:text-neutral-300">Güvenlik Token'ı (API Token)</label>
                                     </div>
-                                    <div className="bg-neutral-50 dark:bg-neutral-950 font-mono p-4 rounded-xl border border-orange-200 dark:border-orange-900/50 font-medium text-xs text-orange-600 dark:text-orange-400 break-all overflow-hidden relative">
+                                    <div className="bg-neutral-50 dark:bg-neutral-950 font-mono p-4 pr-28 rounded-xl border border-orange-200 dark:border-orange-900/50 font-medium text-xs text-orange-600 dark:text-orange-400 break-all overflow-hidden relative">
                                         {apiToken}
-                                        <div className="absolute top-2 right-2 text-xs text-orange-500 bg-orange-100 dark:bg-orange-900/50 px-2 py-1 rounded">KOPYALA</div>
+                                        <button
+                                            type="button"
+                                            onClick={() => copyToClipboard(apiToken, 'token')}
+                                            className="absolute top-2 right-2 inline-flex items-center gap-1.5 text-xs text-orange-600 hover:text-orange-700 bg-orange-100 hover:bg-orange-200 dark:text-orange-300 dark:bg-orange-900/50 dark:hover:bg-orange-900 px-2 py-1 rounded transition-colors"
+                                        >
+                                            {copiedField === 'token' ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                                            {copiedField === 'token' ? 'KOPYALANDI' : 'KOPYALA'}
+                                        </button>
                                     </div>
                                 </div>
                             </div>

@@ -105,11 +105,11 @@ struct ServerSettingsView: View {
         do {
             if let data = code.data(using: .utf8),
                let json = try JSONSerialization.jsonObject(with: data) as? [String: String],
-               let ip = json["ip"] {
+               let ip = json["ip"] ?? json["url"] ?? json["serverURL"] {
                 inputURL = ip
                 
                 isTesting = true
-                let urlWithPort = inputURL.components(separatedBy: ":").count > 2 ? inputURL : (port.isEmpty || port == "80" ? inputURL : "\(inputURL):\(port)")
+                let urlWithPort = ServerSettings.normalizedBaseURL(inputURL, port: port)
                 
                 ServerConnectionService.shared.testConnection(url: urlWithPort) { result in
                     isTesting = false
@@ -150,7 +150,7 @@ struct ServerSettingsView: View {
         testResult = ""
         isSuccess = false
         
-        let urlWithPort = inputURL.components(separatedBy: ":").count > 2 ? inputURL : (port.isEmpty || port == "80" ? inputURL : "\(inputURL):\(port)")
+        let urlWithPort = ServerSettings.normalizedBaseURL(inputURL, port: port)
         
         ServerConnectionService.shared.testConnection(url: urlWithPort) { result in
             isTesting = false
@@ -171,7 +171,7 @@ struct ServerSettingsView: View {
     }
     
     private func saveSettings() {
-        let urlWithPort = inputURL.components(separatedBy: ":").count > 2 ? inputURL : (port.isEmpty || port == "80" ? inputURL : "\(inputURL):\(port)")
+        let urlWithPort = ServerSettings.normalizedBaseURL(inputURL, port: port)
         serverURL = urlWithPort
         authToken = inputToken
         testResult = "Kaydedildi! Alt menüden Ana Sayfaya geçebilirsiniz."
