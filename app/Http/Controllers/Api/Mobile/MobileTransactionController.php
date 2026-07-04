@@ -82,11 +82,43 @@ class MobileTransactionController extends Controller
      */
     public function inventoryList(Request $request)
     {
-        $products = Product::where('is_active', true)
-            ->where('current_stock', '>', 0)
-            ->orderBy('current_stock', 'desc')
-            ->limit(150)
-            ->get();
+        $query = Product::where('is_active', true)
+            ->where('current_stock', '>', 0);
+
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('barcode', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('sort')) {
+            switch ($request->sort) {
+                case 'stock_asc':
+                    $query->orderBy('current_stock', 'asc');
+                    break;
+                case 'stock_desc':
+                    $query->orderBy('current_stock', 'desc');
+                    break;
+                case 'price_asc':
+                    $query->orderBy('sale_price', 'asc');
+                    break;
+                case 'price_desc':
+                    $query->orderBy('sale_price', 'desc');
+                    break;
+                case 'name_asc':
+                    $query->orderBy('name', 'asc');
+                    break;
+                default:
+                    $query->orderBy('current_stock', 'desc');
+            }
+        } else {
+            $query->orderBy('current_stock', 'desc');
+        }
+
+        $products = $query->paginate(20);
 
         return response()->json($products);
     }
