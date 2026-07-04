@@ -76,4 +76,43 @@ class MobileTransactionController extends Controller
             }),
         ]);
     }
+
+    /**
+     * Get list of in-stock products (Stok Listesi)
+     */
+    public function inventoryList(Request $request)
+    {
+        $products = Product::where('is_active', true)
+            ->where('current_stock', '>', 0)
+            ->orderBy('current_stock', 'desc')
+            ->limit(150)
+            ->get();
+
+        return response()->json($products);
+    }
+
+    /**
+     * Get inventory reports and aggregates (Raporlar)
+     */
+    public function inventoryReports(Request $request)
+    {
+        $totalProducts = Product::where('is_active', true)->count();
+        $totalStock = Product::where('is_active', true)->sum('current_stock');
+        
+        $totalPurchaseValue = Product::where('is_active', true)
+            ->selectRaw('SUM(current_stock * purchase_price) as total')
+            ->value('total') ?? 0;
+            
+        $totalSaleValue = Product::where('is_active', true)
+            ->selectRaw('SUM(current_stock * sale_price) as total')
+            ->value('total') ?? 0;
+
+        return response()->json([
+            'success' => true,
+            'total_products' => $totalProducts,
+            'total_stock' => (int)$totalStock,
+            'total_purchase_value' => (float)$totalPurchaseValue,
+            'total_sale_value' => (float)$totalSaleValue,
+        ]);
+    }
 }
