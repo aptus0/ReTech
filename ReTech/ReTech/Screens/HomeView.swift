@@ -209,8 +209,8 @@ struct HomeView: View {
     private func destination(for title: String) -> some View {
         switch title {
         case "Ürün Sorgula": ProductInquiryView()
-        case "Hızlı Etiket": ScannerView(mode: .quickLabel)
-        case "Barkod Çıkart": ScannerView(mode: .barcodePrint)
+        case "Hızlı Etiket": ProductInquiryView()
+        case "Barkod Çıkart": PrintQueueScannerView()
         case "Stok Sayım": InventoryCountView()
         case "Stok Listesi": InventoryListView()
         case "Raporlar": ReportsView()
