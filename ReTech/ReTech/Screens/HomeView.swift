@@ -20,6 +20,8 @@ struct HomeView: View {
         MenuItem(title: "Hızlı Etiket",     icon: "barcode.viewfinder",           color: Color(hex: "EA580C")),
         MenuItem(title: "Barkod Çıkart",    icon: "printer.fill",                 color: Color(hex: "0891B2")),
         MenuItem(title: "Stok Sayım",       icon: "list.clipboard.fill",          color: Color(hex: "059669")),
+        MenuItem(title: "Stok Listesi",     icon: "shippingbox.fill",             color: Color(hex: "10B981")),
+        MenuItem(title: "Raporlar",         icon: "chart.pie.fill",               color: Color(hex: "8B5CF6")),
         MenuItem(title: "Fiyat Güncelle",   icon: "tag.fill",                     color: Color(hex: "F59E0B")),
         MenuItem(title: "Ürün Ekle",        icon: "plus.circle.fill",             color: Color(hex: "FB923C")),
         MenuItem(title: "İşlem Geçmişi",    icon: "clock.arrow.circlepath",       color: Color(hex: "F97316")),
@@ -197,6 +199,10 @@ struct HomeView: View {
             PriceUpdateView()
         case "Stok Sayım":
             InventoryCountView()
+        case "Stok Listesi":
+            InventoryListView()
+        case "Raporlar":
+            ReportsView()
         case "İşlem Geçmişi":
             TransactionHistoryView()
         case "Destek Log":
