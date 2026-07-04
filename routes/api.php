@@ -37,6 +37,7 @@ Route::prefix('mobile')->group(function () {
     Route::post('/inventory-count', [MobileTransactionController::class, 'inventoryCount']);
     Route::get('/inventory/list', [MobileTransactionController::class, 'inventoryList']);
     Route::get('/inventory/reports', [MobileTransactionController::class, 'inventoryReports']);
+    Route::get('/transactions', [MobileTransactionController::class, 'history']);
 });
 
 // Print Worker API

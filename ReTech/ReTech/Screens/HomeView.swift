@@ -8,6 +8,7 @@ import SwiftUI
 struct HomeView: View {
     @AppStorage("serverURL") private var serverURL: String = ""
     @AppStorage("authToken") private var authToken: String = ""
+    @AppStorage("userName") private var userName: String = ""
 
     private struct MenuItem {
         let title: String
@@ -54,17 +55,20 @@ struct HomeView: View {
     private var headerSection: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 3) {
-                Text("Merhaba 👋")
+                Text("Hoş Geldiniz 👋")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(DS.textSecondary)
-                Text("Öz Turuncu")
+                Text(userName.isEmpty ? "ReTech Kullanıcısı" : userName)
                     .font(.system(size: 26, weight: .bold, design: .rounded))
                     .foregroundColor(DS.textPrimary)
             }
             Spacer()
             if !authToken.isEmpty {
                 Button {
-                    withAnimation { authToken = "" }
+                    withAnimation { 
+                        authToken = "" 
+                        userName = ""
+                    }
                 } label: {
                     ZStack {
                         Circle()
@@ -101,29 +105,31 @@ struct HomeView: View {
         .cornerRadius(14)
     }
 
-    // MARK: - Hero Card
+    // MARK: - Hero Card (Glassmorphism & Gradients)
     private var heroCard: some View {
         ZStack(alignment: .topLeading) {
             // Gradient background
-            RoundedRectangle(cornerRadius: 24)
-                .fill(DS.heroGradient)
-                .frame(height: 164)
-                .shadow(color: DS.primary.opacity(0.45), radius: 22, x: 0, y: 12)
+            LinearGradient(
+                colors: [Color(hex: "FF8C00"), Color(hex: "E65100")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .frame(height: 164)
+            .cornerRadius(24)
+            .shadow(color: Color(hex: "FF8C00").opacity(0.45), radius: 15, x: 0, y: 8)
 
-            // Decorative circles
+            // Decorative shapes for premium feel
             GeometryReader { geo in
                 Circle()
-                    .fill(Color.white.opacity(0.07))
-                    .frame(width: 180, height: 180)
-                    .offset(x: geo.size.width - 70, y: -50)
+                    .fill(Color.white.opacity(0.15))
+                    .frame(width: 150, height: 150)
+                    .blur(radius: 8)
+                    .offset(x: geo.size.width - 60, y: -40)
                 Circle()
-                    .fill(Color.white.opacity(0.05))
-                    .frame(width: 110, height: 110)
-                    .offset(x: geo.size.width - 20, y: 50)
-                Circle()
-                    .fill(Color.white.opacity(0.04))
-                    .frame(width: 60, height: 60)
-                    .offset(x: geo.size.width + 10, y: 110)
+                    .fill(Color.white.opacity(0.1))
+                    .frame(width: 90, height: 90)
+                    .blur(radius: 6)
+                    .offset(x: geo.size.width - 150, y: 80)
             }
             .clipped()
             .cornerRadius(24)
@@ -131,113 +137,88 @@ struct HomeView: View {
             // Content
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 6) {
-                    Image(systemName: "checkmark.shield.fill")
-                        .font(.system(size: 12))
-                        .foregroundColor(Color.white.opacity(0.65))
-                    Text("Aktif Sistem")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(Color.white.opacity(0.65))
+                    Image(systemName: "bolt.shield.fill")
+                        .font(.system(size: 14))
+                        .foregroundColor(Color.white)
+                    Text("ReTech Yönetim Sistemi")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(Color.white)
                 }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(Color.white.opacity(0.2))
+                .cornerRadius(12)
 
-                Text("Stok & Ürün\nYönetimi")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(.white)
-                    .lineSpacing(2)
-
+                Spacer()
+                
                 HStack(spacing: 24) {
-                    statusPill(label: "Sunucu", value: serverURL.isEmpty ? "Bağlı Değil" : "Bağlı ✓",
-                               ok: !serverURL.isEmpty)
-                    statusPill(label: "Oturum", value: authToken.isEmpty ? "Giriş Yok" : "Aktif ✓",
-                               ok: !authToken.isEmpty)
+                    statusPill(label: "Sunucu", value: serverURL.isEmpty ? "Bağlı Değil" : "Aktif", ok: !serverURL.isEmpty)
+                    statusPill(label: "Oturum", value: authToken.isEmpty ? "Giriş Yok" : "Bağlı", ok: !authToken.isEmpty)
                 }
             }
-            .padding(22)
+            .padding(20)
         }
-        .frame(height: 164)
     }
 
     private func statusPill(label: String, value: String, ok: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
+        VStack(alignment: .leading, spacing: 2) {
             Text(label)
-                .font(.system(size: 11))
-                .foregroundColor(Color.white.opacity(0.55))
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(Color.white.opacity(0.7))
             Text(value)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(ok ? Color(hex: "34D399") : Color(hex: "F87171"))
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.white)
         }
     }
 
-    // MARK: - Grid
+    // MARK: - Modern Grid Actions
     private var quickActionsGrid: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Hızlı Erişim")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(DS.textSecondary)
+        LazyVGrid(columns: columns, spacing: 16) {
+            ForEach(menuItems, id: \.title) { item in
+                NavigationLink(destination: destination(for: item.title)) {
+                    ZStack {
+                        // Glassy card background
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(DS.surface)
+                            .shadow(color: Color.black.opacity(0.04), radius: 8, y: 4)
 
-            LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(menuItems, id: \.title) { item in
-                    NavigationLink(destination: destinationView(for: item.title)) {
-                        MenuActionCard(title: item.title, icon: item.icon, accentColor: item.color)
+                        VStack(spacing: 12) {
+                            ZStack {
+                                Circle()
+                                    .fill(item.color.opacity(0.12))
+                                    .frame(width: 54, height: 54)
+                                Image(systemName: item.icon)
+                                    .font(.system(size: 24))
+                                    .foregroundColor(item.color)
+                            }
+                            
+                            Text(item.title)
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(DS.textPrimary)
+                        }
+                        .padding(.vertical, 20)
                     }
-                    .buttonStyle(PlainButtonStyle())
                 }
+                .disabled(isMissingInfo && item.title != "Destek Log")
+                .opacity((isMissingInfo && item.title != "Destek Log") ? 0.4 : 1.0)
             }
         }
     }
 
-    // MARK: - Navigation
     @ViewBuilder
-    private func destinationView(for title: String) -> some View {
+    private func destination(for title: String) -> some View {
         switch title {
-        case "Ürün Sorgula", "Hızlı Etiket":
-            ProductInquiryView()
-        case "Barkod Çıkart":
-            PrintQueueScannerView()
-        case "Ürün Ekle":
-            ProductAddView()
-        case "Fiyat Güncelle":
-            PriceUpdateView()
-        case "Stok Sayım":
-            InventoryCountView()
-        case "Stok Listesi":
-            InventoryListView()
-        case "Raporlar":
-            ReportsView()
-        case "İşlem Geçmişi":
-            TransactionHistoryView()
-        case "Destek Log":
-            SupportLogView()
-        default:
-            EmptyView()
+        case "Ürün Sorgula": ProductInquiryView()
+        case "Hızlı Etiket": ScannerView(mode: .quickLabel)
+        case "Barkod Çıkart": ScannerView(mode: .barcodePrint)
+        case "Stok Sayım": InventoryCountView()
+        case "Stok Listesi": InventoryListView()
+        case "Raporlar": ReportsView()
+        case "Fiyat Güncelle": PriceUpdateView()
+        case "Ürün Ekle": ProductAddView()
+        case "İşlem Geçmişi": TransactionHistoryView()
+        case "Destek Log": SupportLogView()
+        default: Text("Yapım Aşamasında")
         }
-    }
-}
-
-// MARK: - Menu Action Card
-struct MenuActionCard: View {
-    let title: String
-    let icon: String
-    let accentColor: Color
-
-    var body: some View {
-        VStack(spacing: 14) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(accentColor.opacity(0.15))
-                    .frame(width: 52, height: 52)
-                Image(systemName: icon)
-                    .font(.system(size: 24, weight: .medium))
-                    .foregroundColor(accentColor)
-            }
-            Text(title)
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(DS.textPrimary)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-                .minimumScaleFactor(0.8)
-        }
-        .frame(maxWidth: .infinity, minHeight: 112)
-        .padding(.vertical, 16)
-        .glassCard(cornerRadius: 18)
     }
 }

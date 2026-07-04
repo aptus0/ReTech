@@ -6,7 +6,9 @@
 import SwiftUI
 
 struct LoginView: View {
+    @AppStorage("serverURL") private var serverURL: String = ""
     @AppStorage("authToken") private var authToken: String = ""
+    @AppStorage("userName") private var userName: String = ""
 
     @State private var email    = ""
     @State private var password = ""
@@ -173,6 +175,9 @@ struct LoginView: View {
             case .success(let response):
                 if response.success, let token = response.token {
                     authToken = token
+                    if let uName = response.user?.name {
+                        userName = uName
+                    }
                 } else {
                     errorMessage = response.message ?? "Giriş başarısız."
                 }

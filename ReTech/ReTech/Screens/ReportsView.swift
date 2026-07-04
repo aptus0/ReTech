@@ -11,6 +11,7 @@ struct ReportData: Codable {
     let total_stock: Int
     let total_purchase_value: Double
     let total_sale_value: Double
+    let low_stock_products: [ProductInfo]?
 }
 
 struct ReportsView: View {
@@ -44,15 +45,23 @@ struct ReportsView: View {
                         VStack(spacing: 8) {
                             Text("Toplam Stok Satış Değeri")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(DS.textSecondary)
+                                .foregroundColor(Color.white.opacity(0.8))
                             
                             Text(String(format: "%.2f TL", data.total_sale_value))
-                                .font(.system(size: 32, weight: .heavy, design: .rounded))
-                                .foregroundColor(DS.primary)
+                                .font(.system(size: 34, weight: .heavy, design: .rounded))
+                                .foregroundColor(.white)
                         }
-                        .padding(.vertical, 24)
+                        .padding(.vertical, 32)
                         .frame(maxWidth: .infinity)
-                        .glassCard(cornerRadius: 24)
+                        .background(
+                            LinearGradient(
+                                colors: [Color(hex: "6366F1"), Color(hex: "8B5CF6")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .cornerRadius(24)
+                        .shadow(color: Color(hex: "6366F1").opacity(0.4), radius: 12, y: 6)
                         .padding(.top, 16)
                         
                         // Grid stats
@@ -76,8 +85,8 @@ struct ReportsView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             HStack {
                                 ZStack {
-                                    Circle().fill(DS.textSecondary.opacity(0.15)).frame(width: 40, height: 40)
-                                    Image(systemName: "arrow.down.left.circle.fill").font(.system(size: 20)).foregroundColor(DS.textSecondary)
+                                    Circle().fill(Color(hex: "F43F5E").opacity(0.15)).frame(width: 44, height: 44)
+                                    Image(systemName: "arrow.down.left.circle.fill").font(.system(size: 22)).foregroundColor(Color(hex: "F43F5E"))
                                 }
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("Toplam Maliyet (Geliş)")
@@ -91,7 +100,48 @@ struct ReportsView: View {
                             }
                         }
                         .padding(20)
-                        .glassCard(cornerRadius: 16)
+                        .background(DS.surface)
+                        .cornerRadius(20)
+                        .shadow(color: Color.black.opacity(0.04), radius: 8, y: 4)
+                        
+                        // LOW STOCK WIDGET
+                        if let lowStocks = data.low_stock_products, !lowStocks.isEmpty {
+                            VStack(alignment: .leading, spacing: 14) {
+                                HStack {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundColor(DS.error)
+                                    Text("Düşük Stok Uyarıları")
+                                        .font(.system(size: 18, weight: .bold))
+                                        .foregroundColor(DS.textPrimary)
+                                }
+                                .padding(.horizontal, 4)
+                                
+                                ForEach(lowStocks) { product in
+                                    HStack(spacing: 12) {
+                                        ZStack {
+                                            Circle().fill(DS.error.opacity(0.1)).frame(width: 40, height: 40)
+                                            Text("\(product.current_stock ?? 0)")
+                                                .font(.system(size: 14, weight: .bold))
+                                                .foregroundColor(DS.error)
+                                        }
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(product.name)
+                                                .font(.system(size: 14, weight: .semibold))
+                                                .foregroundColor(DS.textPrimary)
+                                            Text(product.barcode ?? product.code ?? "")
+                                                .font(.system(size: 12))
+                                                .foregroundColor(DS.textSecondary)
+                                        }
+                                        Spacer()
+                                    }
+                                    .padding(12)
+                                    .background(DS.surface)
+                                    .cornerRadius(16)
+                                    .shadow(color: Color.black.opacity(0.03), radius: 6, y: 2)
+                                }
+                            }
+                            .padding(.top, 10)
+                        }
                         
                         Spacer(minLength: 40)
                     }
@@ -109,26 +159,28 @@ struct ReportsView: View {
     private func reportMetricCard(title: String, value: String, icon: String, color: Color) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 14)
                     .fill(color.opacity(0.15))
-                    .frame(width: 44, height: 44)
+                    .frame(width: 48, height: 48)
                 Image(systemName: icon)
-                    .font(.system(size: 20))
+                    .font(.system(size: 22))
                     .foregroundColor(color)
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 13, weight: .medium))
                     .foregroundColor(DS.textSecondary)
                 Text(value)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundColor(DS.textPrimary)
             }
         }
-        .padding(16)
+        .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard(cornerRadius: 16)
+        .background(DS.surface)
+        .cornerRadius(20)
+        .shadow(color: Color.black.opacity(0.04), radius: 8, y: 4)
     }
 
     private func fetchReports() {
@@ -170,13 +222,9 @@ struct ReportsView: View {
 
                 do {
                     let decoded = try JSONDecoder().decode(ReportData.self, from: data)
-                    if decoded.success {
-                        self.reportData = decoded
-                    } else {
-                        self.errorMessage = "Veri alınırken bir hata oluştu."
-                    }
+                    self.reportData = decoded
                 } catch {
-                    self.errorMessage = "Veri ayrıştırma hatası."
+                    self.errorMessage = "Veri ayrıştırma hatası. Sunucunuzda güncellemeleri kontrol edin."
                 }
             }
         }.resume()

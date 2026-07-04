@@ -139,12 +139,20 @@ class MobileTransactionController extends Controller
             ->selectRaw('SUM(current_stock * sale_price) as total')
             ->value('total') ?? 0;
 
+        $lowStockProducts = Product::where('is_active', true)
+            ->where('current_stock', '>', 0)
+            ->whereRaw('current_stock <= min_stock')
+            ->orderBy('current_stock', 'asc')
+            ->limit(10)
+            ->get();
+
         return response()->json([
             'success' => true,
             'total_products' => $totalProducts,
             'total_stock' => (int)$totalStock,
             'total_purchase_value' => (float)$totalPurchaseValue,
             'total_sale_value' => (float)$totalSaleValue,
+            'low_stock_products' => $lowStockProducts
         ]);
     }
 }
