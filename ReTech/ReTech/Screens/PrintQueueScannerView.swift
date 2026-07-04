@@ -1,3 +1,8 @@
+//
+//  PrintQueueScannerView.swift
+//  ReTech
+//
+
 import SwiftUI
 import UserNotifications
 
@@ -6,211 +11,215 @@ struct ProductResponse: Codable {
     let product: ProductInfo?
 }
 
-struct ProductInfo: Codable {
-    let id: Int
-    let name: String
-    let barcode: String?
-    let code: String?
-    let sale_price: Double
-    let current_stock: Int?
-    let stock_quantity: Int?
-
-    enum CodingKeys: String, CodingKey {
-        case id, name, barcode, code, sale_price, current_stock, stock_quantity
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(Int.self, forKey: .id)
-        name = try container.decode(String.self, forKey: .name)
-        barcode = try container.decodeIfPresent(String.self, forKey: .barcode)
-        code = try container.decodeIfPresent(String.self, forKey: .code)
-        current_stock = try container.decodeIfPresent(Int.self, forKey: .current_stock)
-        stock_quantity = try container.decodeIfPresent(Int.self, forKey: .stock_quantity)
-
-        if let priceDouble = try? container.decode(Double.self, forKey: .sale_price) {
-            sale_price = priceDouble
-        } else if let priceString = try? container.decode(String.self, forKey: .sale_price), let priceDouble = Double(priceString) {
-            sale_price = priceDouble
-        } else {
-            sale_price = 0.0
-        }
-    }
-}
-
 struct PrintQueueScannerView: View {
     @AppStorage("serverURL") private var serverURL: String = ""
     @AppStorage("authToken") private var authToken: String = ""
-    
-    @State private var isScanning = true
+
+    @State private var isScanning     = true
     @State private var scannedProduct: ProductInfo?
     @State private var errorMessage: String?
-    @State private var showResult = false
-    
+
     var body: some View {
         ZStack {
+            DS.bg.ignoresSafeArea()
+
             if isScanning {
-                ScannerView { code in
-                    isScanning = false
-                    addToQueue(barcode: code)
-                }
-                .edgesIgnoringSafeArea(.all)
-                .onAppear {
-                    requestNotificationPermission()
-                }
-                
-                VStack {
-                    Spacer()
-                    Text("Barkodu Okutun")
-                        .font(.headline)
-                        .padding()
-                        .background(Color.black.opacity(0.7))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .padding(.bottom, 40)
-                }
+                cameraOverlay
             } else {
-                VStack(spacing: 20) {
-                    if let product = scannedProduct {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(.green)
-                        
-                        Text("Kuyruğa Eklendi!")
-                            .font(.title)
-                            .fontWeight(.bold)
-                        
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text(product.name)
-                                .font(.headline)
-                            HStack {
-                                Text("Fiyat:")
-                                Spacer()
-                                Text(String(format: "%.2f TL", product.sale_price))
-                                    .fontWeight(.bold)
-                            }
-                            HStack {
-                                Text("Stok:")
-                                Spacer()
-                                Text("\(product.current_stock ?? product.stock_quantity ?? 0) Adet")
-                                    .fontWeight(.bold)
-                            }
-                        }
-                        .padding()
-                        .background(Color(UIColor.secondarySystemBackground))
-                        .cornerRadius(12)
-                        .padding(.horizontal, 30)
-                    } else if let error = errorMessage {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(.red)
-                        Text("Hata")
-                            .font(.title)
-                            .fontWeight(.bold)
-                        Text(error)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                    } else {
-                        ProgressView("İşleniyor...")
-                    }
-                    
-                    Button(action: {
-                        scannedProduct = nil
-                        errorMessage = nil
-                        isScanning = true
-                    }) {
-                        Text("Yeni Barkod Okut")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                            .padding(.horizontal, 30)
-                    }
-                    .padding(.top, 20)
-                }
+                resultContent
             }
         }
         .navigationTitle("Hızlı Barkod Çıkart")
-        .navigationBarTitleDisplayMode(.inline)
+        .darkNavBar()
+        .onAppear { requestNotificationPermission() }
     }
-    
-    private func requestNotificationPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
-            if granted {
-                print("Bildirim izni verildi")
+
+    // MARK: Camera
+    private var cameraOverlay: some View {
+        ZStack {
+            ScannerView { code in
+                isScanning = false
+                addToQueue(barcode: code)
+            }
+            .ignoresSafeArea()
+
+            VStack {
+                Spacer()
+                scannerLabel("Barkodu Kameraya Gösterin")
             }
         }
     }
-    
-    private func sendNotification(title: String, body: String) {
-        let content = UNMutableNotificationContent()
-        content.title = title
-        content.body = body
-        content.sound = .default
-        
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-        UNUserNotificationCenter.current().add(request)
-    }
 
-    private func addToQueue(barcode: String) {
-        var baseURL = serverURL
-        if !baseURL.hasPrefix("http") {
-            baseURL = "http://" + baseURL
-        }
-        
-        guard let url = URL(string: "\(baseURL)/api/mobile/print-queue/add") else {
-            errorMessage = "Geçersiz sunucu adresi: \(baseURL)"
-            sendNotification(title: "Hata", body: "Geçersiz sunucu adresi. URL: \(baseURL)")
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        if !authToken.isEmpty {
-            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-        }
-        
-        let body: [String: Any] = ["barcode": barcode]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        NetworkManager.shared.session.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    self.errorMessage = "Bağlantı hatası: \(error.localizedDescription)"
-                    self.sendNotification(title: "Bağlantı Hatası", body: error.localizedDescription)
-                    return
-                }
-                
-                guard let httpResponse = response as? HTTPURLResponse, let data = data else {
-                    self.errorMessage = "Geçersiz yanıt."
-                    self.sendNotification(title: "Hata", body: "Sunucudan geçersiz yanıt alındı.")
-                    return
-                }
-                
-                if httpResponse.statusCode == 200 {
-                    do {
-                        let result = try JSONDecoder().decode(ProductResponse.self, from: data)
-                        self.scannedProduct = result.product
-                        
-                        if let prod = result.product {
-                            self.sendNotification(title: "Kuyruğa Eklendi ✅", body: "\(prod.name) | Fiyat: \(prod.sale_price) TL | Stok: \(prod.current_stock ?? prod.stock_quantity ?? 0)")
+    // MARK: Result
+    @ViewBuilder
+    private var resultContent: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 22) {
+                if let product = scannedProduct {
+                    // Success state
+                    VStack(spacing: 16) {
+                        ZStack {
+                            Circle().fill(DS.success.opacity(0.14)).frame(width: 90, height: 90)
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 48))
+                                .foregroundColor(DS.success)
                         }
-                    } catch {
-                        self.errorMessage = "Veri okunamadı."
-                        self.sendNotification(title: "Veri Hatası", body: "Ürün bilgileri çözümlenemedi.")
+                        Text("Kuyruğa Eklendi!")
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+
+                    // Product card
+                    VStack(spacing: 0) {
+                        HStack(spacing: 14) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(DS.success.opacity(0.14))
+                                    .frame(width: 48, height: 48)
+                                Image(systemName: "printer.fill")
+                                    .font(.system(size: 21))
+                                    .foregroundColor(DS.success)
+                            }
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(product.name)
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .lineLimit(2)
+                                Text(product.barcode ?? product.code ?? "—")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(DS.textSecondary)
+                            }
+                            Spacer()
+                        }
+                        .padding(.bottom, 14)
+
+                        Divider().background(DS.border).padding(.bottom, 14)
+
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Fiyat")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(DS.textSecondary)
+                                Text(String(format: "%.2f ₺", product.sale_price))
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundColor(DS.success)
+                            }
+                            Spacer()
+                            VStack(alignment: .trailing, spacing: 4) {
+                                Text("Stok")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(DS.textSecondary)
+                                Text("\(product.current_stock ?? product.stock_quantity ?? 0) Adet")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(DS.accent)
+                            }
+                        }
+                    }
+                    .padding(18)
+                    .glassCard()
+                    .padding(.horizontal, 20)
+
+                } else if let error = errorMessage {
+                    VStack(spacing: 14) {
+                        ZStack {
+                            Circle().fill(DS.error.opacity(0.14)).frame(width: 80, height: 80)
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 40))
+                                .foregroundColor(DS.error)
+                        }
+                        Text("İşlem Başarısız")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                        Text(error)
+                            .font(.system(size: 14))
+                            .foregroundColor(DS.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 30)
                     }
                 } else {
-                    if let errorJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                       let msg = errorJson["message"] as? String {
-                        self.errorMessage = msg
-                        self.sendNotification(title: "İşlem Başarısız ❌", body: "\(msg) (Kod: \(httpResponse.statusCode))")
-                    } else {
-                        self.errorMessage = "Ürün bulunamadı veya sunucu hatası (\(httpResponse.statusCode))."
-                        self.sendNotification(title: "İşlem Başarısız ❌", body: "Hata Kodu: \(httpResponse.statusCode)")
+                    rtLoadingView(message: "İşleniyor...")
+                }
+
+                Button {
+                    scannedProduct = nil
+                    errorMessage = nil
+                    isScanning = true
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "barcode.viewfinder")
+                        Text("Yeni Barkod Okut")
                     }
+                }
+                .buttonStyle(PrimaryButtonStyle())
+                .padding(.horizontal, 20)
+
+                Spacer(minLength: 80)
+            }
+            .padding(.top, 32)
+        }
+    }
+
+    // MARK: Notifications
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
+    }
+
+    private func sendNotification(title: String, body: String) {
+        let content = UNMutableNotificationContent()
+        content.title = title; content.body = body; content.sound = .default
+        UNUserNotificationCenter.current().add(
+            UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        )
+    }
+
+    // MARK: Networking
+    private func addToQueue(barcode: String) {
+        var base = serverURL
+        if !base.hasPrefix("http") { base = "http://" + base }
+        guard let url = URL(string: "\(base)/api/mobile/print-queue/add") else {
+            errorMessage = "Geçersiz sunucu adresi."
+            sendNotification(title: "Hata ❌", body: "Geçersiz sunucu adresi.")
+            return
+        }
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue("application/json", forHTTPHeaderField: "Accept")
+        if !authToken.isEmpty { req.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization") }
+        req.httpBody = try? JSONSerialization.data(withJSONObject: ["barcode": barcode])
+
+        NetworkManager.shared.session.dataTask(with: req) { data, response, error in
+            DispatchQueue.main.async {
+                if let e = error {
+                    self.errorMessage = "Bağlantı hatası: \(e.localizedDescription)"
+                    self.sendNotification(title: "Bağlantı Hatası ❌", body: e.localizedDescription)
+                    return
+                }
+                guard let http = response as? HTTPURLResponse, let data = data else {
+                    self.errorMessage = "Geçersiz yanıt."
+                    self.sendNotification(title: "Hata ❌", body: "Geçersiz sunucu yanıtı.")
+                    return
+                }
+                if http.statusCode == 200 {
+                    if let result = try? JSONDecoder().decode(ProductResponse.self, from: data) {
+                        self.scannedProduct = result.product
+                        if let prod = result.product {
+                            self.sendNotification(
+                                title: "Kuyruğa Eklendi ✅",
+                                body: "\(prod.name) | \(String(format: "%.2f", prod.sale_price)) ₺ | Stok: \(prod.current_stock ?? prod.stock_quantity ?? 0)"
+                            )
+                        }
+                    } else {
+                        self.errorMessage = "Veri okunamadı."
+                        self.sendNotification(title: "Veri Hatası ❌", body: "Ürün bilgileri çözümlenemedi.")
+                    }
+                } else {
+                    let msg: String
+                    if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                       let m = json["message"] as? String { msg = m }
+                    else { msg = "Sunucu hatası (\(http.statusCode))." }
+                    self.errorMessage = msg
+                    self.sendNotification(title: "İşlem Başarısız ❌", body: msg)
                 }
             }
         }.resume()

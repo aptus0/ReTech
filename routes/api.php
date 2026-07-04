@@ -25,6 +25,7 @@ Route::prefix('mobile')->group(function () {
     Route::get('/print-queue', [PrintQueueController::class, 'index']);
     Route::post('/print-queue/add', [PrintQueueController::class, 'store']);
     Route::delete('/print-queue/{id}', [PrintQueueController::class, 'destroy']);
+    Route::get('/products/search', [ProductInquiryController::class, 'search']);
     Route::get('/products/inquiry/{barcode}', [ProductInquiryController::class, 'show']);
 
     // Products & Prices

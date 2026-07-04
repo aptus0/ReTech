@@ -19,4 +19,27 @@ class ProductInquiryController extends Controller
 
         return response()->json($product);
     }
+
+    public function search(\Illuminate\Http\Request $request)
+    {
+        $query = $request->query('q');
+        
+        if (empty($query)) {
+            $products = Product::where('is_active', true)
+                ->limit(50)
+                ->get();
+            return response()->json($products);
+        }
+
+        $products = Product::where('is_active', true)
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'LIKE', '%' . $query . '%')
+                  ->orWhere('barcode', $query)
+                  ->orWhere('code', $query);
+            })
+            ->limit(20)
+            ->get();
+
+        return response()->json($products);
+    }
 }

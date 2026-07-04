@@ -11,7 +11,10 @@ enum ServerSettings {
             : "http://\(trimmedURL)"
         
         guard var components = URLComponents(string: urlWithScheme) else {
-            return urlWithScheme.hasSuffix("/") ? String(urlWithScheme.dropLast()) : urlWithScheme
+            var finalStr = urlWithScheme
+            if finalStr.hasSuffix("/") { finalStr.removeLast() }
+            if finalStr.hasSuffix("/api") { finalStr = String(finalStr.dropLast(4)) }
+            return finalStr
         }
         
         if components.port == nil,
@@ -25,8 +28,10 @@ enum ServerSettings {
             }
         }
         
-        let normalizedURL = components.url?.absoluteString ?? urlWithScheme
-        return normalizedURL.hasSuffix("/") ? String(normalizedURL.dropLast()) : normalizedURL
+        var normalizedURL = components.url?.absoluteString ?? urlWithScheme
+        if normalizedURL.hasSuffix("/") { normalizedURL.removeLast() }
+        if normalizedURL.hasSuffix("/api") { normalizedURL = String(normalizedURL.dropLast(4)) }
+        return normalizedURL
     }
 }
 
