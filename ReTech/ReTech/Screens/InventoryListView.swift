@@ -206,7 +206,16 @@ struct InventoryListView: View {
                     }
                     self.lastPage = decoded.last_page
                 } catch {
-                    self.errorMessage = "Veri format hatası. Lütfen sunucunuzda güncellemeleri kontrol edin."
+                    // Fallback for older backend versions that return a flat array
+                    do {
+                        let flatDecoded = try JSONDecoder().decode([ProductInfo].self, from: data)
+                        if self.currentPage == 1 {
+                            self.products = flatDecoded
+                        }
+                        self.lastPage = 1 // Since it's a flat array, there's only one page
+                    } catch let fallbackError {
+                        self.errorMessage = "Veri format hatası. (Hata: \(fallbackError.localizedDescription))"
+                    }
                 }
             }
         }.resume()
