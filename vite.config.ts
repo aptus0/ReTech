@@ -8,8 +8,11 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     server: {
-        host: '0.0.0.0',
+        host: 'kobix.test',
         cors: true,
+        hmr: {
+            host: 'kobix.test',
+        },
     },
     plugins: [
         laravel({

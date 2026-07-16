@@ -1,12 +1,12 @@
 //
-//  ReTechApp.swift
-//  ReTech
+//  EnvanzoApp.swift
+//  Envanzo
 //
 
 import SwiftUI
 
 @main
-struct ReTechApp: App {
+struct EnvanzoApp: App {
 
     init() {
         configureNavigationBarAppearance()

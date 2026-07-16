@@ -68,7 +68,7 @@ export default function Create() {
                                     value={data.name}
                                     onChange={e => setData('name', e.target.value)}
                                     required
-                                    placeholder="Örn: Re Tech A.Ş."
+                                    placeholder="Örn: KobiX A.Ş."
                                 />
                                 <InputError message={errors.name} />
                             </div>

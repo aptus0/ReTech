@@ -1,7 +1,7 @@
 {
-    "name": "Re Tech Terminal",
-    "short_name": "Re Tech",
-    "description": "Re Tech mobile terminal and business management panel.",
+    "name": "KobiX",
+    "short_name": "KobiX",
+    "description": "KobiX mobile terminal and business management panel.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#111827",

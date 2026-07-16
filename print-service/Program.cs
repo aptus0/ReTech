@@ -2,7 +2,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace ReTechPrintService
+namespace EnvanzoPrintService
 {
     class Program
     {
@@ -12,7 +12,7 @@ namespace ReTechPrintService
             
             builder.Services.AddWindowsService(options =>
             {
-                options.ServiceName = "ReTech Print Service";
+                options.ServiceName = "Envanzo Print Service";
             });
             
             builder.Services.AddHostedService<PrintWorker>();

@@ -1,6 +1,6 @@
 //
 //  PrintQueueScannerView.swift
-//  ReTech
+//  Envanzo
 //
 
 import SwiftUI
@@ -66,7 +66,7 @@ struct PrintQueueScannerView: View {
                         }
                         Text("Kuyruğa Eklendi!")
                             .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(.white)
+                            .foregroundColor(DS.textPrimary)
                     }
 
                     // Product card
@@ -83,7 +83,7 @@ struct PrintQueueScannerView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(product.name)
                                     .font(.system(size: 16, weight: .bold))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(DS.textPrimary)
                                     .lineLimit(2)
                                 Text(product.barcode ?? product.code ?? "—")
                                     .font(.system(size: 12))
@@ -129,7 +129,7 @@ struct PrintQueueScannerView: View {
                         }
                         Text("İşlem Başarısız")
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.white)
+                            .foregroundColor(DS.textPrimary)
                         Text(error)
                             .font(.system(size: 14))
                             .foregroundColor(DS.textSecondary)

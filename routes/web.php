@@ -23,9 +23,13 @@ use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\MarketplaceProductController;
+use App\Http\Controllers\MarketplaceOrderController;
+use App\Http\Controllers\MarketplaceReturnController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home');
+Route::redirect('/', '/login')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -87,6 +91,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/e-documents/{invoice}/send', [EDocumentController::class, 'send'])->name('e-documents.send');
     Route::post('/e-documents/{invoice}/status', [EDocumentController::class, 'checkStatus'])->name('e-documents.status');
 
+    // GİB Live Fetch API
+    Route::get('/api/e-documents/gib', [EDocumentController::class, 'fetchFromGib'])->name('api.e-documents.gib');
+    Route::get('/api/e-documents/gib/{uuid}/html', [EDocumentController::class, 'getGibHtml'])->name('api.e-documents.gib.html');
+    
+    // GİB SMS İmza API
+    Route::post('/api/e-documents/gib/sign/start', [EDocumentController::class, 'startGibSign'])->name('api.e-documents.gib.sign.start');
+    Route::post('/api/e-documents/gib/sign/complete', [EDocumentController::class, 'completeGibSign'])->name('api.e-documents.gib.sign.complete');
+
     // Karar Raporları
     Route::get('/decision-reports', [DecisionReportController::class, 'index'])->name('decision-reports.index');
 
@@ -103,10 +115,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
-    // PazaryeriOS Coming Soon
-    Route::inertia('/marketplace/{page?}', 'Marketplace/ComingSoon')
-        ->where('page', '.*')
-        ->name('marketplace.coming-soon');
+    // PazaryeriOS
+    Route::prefix('marketplace')->name('marketplace.')->group(function () {
+        Route::get('/', [MarketplaceController::class, 'index'])->name('index');
+        
+        Route::get('accounts', [MarketplaceController::class, 'accounts'])->name('accounts.index');
+        Route::post('accounts', [MarketplaceController::class, 'storeAccount'])->name('accounts.store');
+        Route::delete('accounts/{account}', [MarketplaceController::class, 'destroyAccount'])->name('accounts.destroy');
+        Route::post('accounts/{account}/test', [MarketplaceController::class, 'testConnection'])->name('accounts.test');
+        
+        Route::post('products/sync', [MarketplaceProductController::class, 'sync'])->name('products.sync');
+        Route::post('products/push-new', [MarketplaceProductController::class, 'pushNew'])->name('products.push-new');
+        Route::post('products/push-stocks', [MarketplaceProductController::class, 'pushStocks'])->name('products.push-stocks');
+        Route::post('orders/sync', [MarketplaceOrderController::class, 'sync'])->name('orders.sync');
+        Route::post('orders/{id}/approve', [MarketplaceOrderController::class, 'approve'])->name('orders.approve');
+        Route::post('orders/{id}/invoice', [MarketplaceOrderController::class, 'invoice'])->name('orders.invoice');
+        Route::delete('products/bulk-delete', [MarketplaceProductController::class, 'bulkDestroy'])->name('products.bulk-delete');
+        Route::resource('products', MarketplaceProductController::class);
+        Route::resource('orders', MarketplaceOrderController::class);
+        Route::resource('returns', MarketplaceReturnController::class);
+    });
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'retech-pwa-v2';
+const CACHE_NAME = 'envanzo-pwa-v2';
 const urlsToCache = [
     '/',
     '/favicon.ico',

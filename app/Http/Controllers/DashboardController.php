@@ -23,6 +23,33 @@ class DashboardController extends Controller
 
         $calendarEvents = CalendarEvent::where('user_id', auth()->id())->get();
 
+        $salesChartData = [];
+        $dayMap = [
+            'Monday' => 'Pzt', 'Tuesday' => 'Sal', 'Wednesday' => 'Çar', 
+            'Thursday' => 'Per', 'Friday' => 'Cum', 'Saturday' => 'Cmt', 'Sunday' => 'Paz'
+        ];
+
+        // Son 7 günün verilerini topla
+        for ($i = 6; $i >= 0; $i--) {
+            $date = \Carbon\Carbon::today()->subDays($i);
+            $dayName = $dayMap[$date->format('l')];
+            
+            // Yerel faturalar (Satışlar)
+            $invoiceSales = \App\Models\Invoice::whereDate('issue_date', $date->format('Y-m-d'))->sum('grand_total');
+            $invoiceCount = \App\Models\Invoice::whereDate('issue_date', $date->format('Y-m-d'))->count();
+            
+            // Pazaryeri siparişleri
+            $mpSales = \App\Models\MarketplaceOrder::whereDate('ordered_at', $date->format('Y-m-d'))->sum('total_amount');
+            $mpCount = \App\Models\MarketplaceOrder::whereDate('ordered_at', $date->format('Y-m-d'))->count();
+            
+            $salesChartData[] = [
+                'name' => $dayName,
+                'sales' => $invoiceSales + $mpSales,
+                'orders' => $invoiceCount + $mpCount,
+                'carts' => 0 // Gerçek sepet verisi API'lerden gelmediği için 0 (veya ileride e-ticaret sitenizden beslenebilir)
+            ];
+        }
+
         return inertia('dashboard', [
             'stats' => [
                 'totalProducts' => $totalProducts,
@@ -32,6 +59,7 @@ class DashboardController extends Controller
             ],
             'latestMovements' => $latestMovements,
             'calendarEvents' => $calendarEvents,
+            'salesChartData' => $salesChartData,
         ]);
     }
 }

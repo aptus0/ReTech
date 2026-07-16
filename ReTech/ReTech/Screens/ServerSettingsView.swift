@@ -1,6 +1,6 @@
 //
 //  ServerSettingsView.swift
-//  ReTech
+//  Envanzo
 //
 
 import SwiftUI

@@ -185,4 +185,118 @@ class EDocumentController extends Controller
             'checked_at' => now(),
         ]);
     }
+
+    public function fetchFromGib(Request $request)
+    {
+        $setting = EDocumentSetting::first();
+
+        if (!$setting || empty($setting->gib_user_code)) {
+            return response()->json(['success' => false, 'message' => 'GİB bilgileri eksik. Ayarlardan kontrol edin.'], 400);
+        }
+
+        try {
+            $gib = new \Mlevent\Fatura\Gib();
+            if ($setting->environment === 'test') {
+                $gib->setTestCredentials();
+            } else {
+                $gib->login($setting->gib_user_code, $setting->gib_password);
+            }
+
+            // Son 30 günlük faturaları getir. (GİB tarafında tarih aralığı verilir)
+            $startDate = now()->subDays(30)->format('d/m/Y');
+            $endDate = now()->format('d/m/Y');
+
+            // Kullanıcıya kesilen (gelen) veya kullanıcının kestiği (giden) faturalar
+            $documents = $gib->getAll($startDate, $endDate);
+
+            return response()->json(['success' => true, 'data' => $documents]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'GİB bağlantı hatası: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function getGibHtml(Request $request, $uuid)
+    {
+        $setting = EDocumentSetting::first();
+
+        if (!$setting || empty($setting->gib_user_code)) {
+            return response()->json(['success' => false, 'message' => 'GİB bilgileri eksik.'], 400);
+        }
+
+        try {
+            $gib = new \Mlevent\Fatura\Gib();
+            if ($setting->environment === 'test') {
+                $gib->setTestCredentials();
+            } else {
+                $gib->login($setting->gib_user_code, $setting->gib_password);
+            }
+
+            $html = $gib->getHtml($uuid, true); // true = signed
+            return response()->json(['success' => true, 'html' => $html]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'HTML alınamadı: ' . $e->getMessage()], 500);
+        }
+    }
+    public function startGibSign(Request $request)
+    {
+        $setting = EDocumentSetting::first();
+
+        if (!$setting || empty($setting->gib_user_code)) {
+            return response()->json(['success' => false, 'message' => 'GİB bilgileri eksik.'], 400);
+        }
+
+        try {
+            $gib = new \Mlevent\Fatura\Gib();
+            if ($setting->environment === 'test') {
+                $gib->setTestCredentials();
+            } else {
+                $gib->login($setting->gib_user_code, $setting->gib_password);
+            }
+
+            $oid = $gib->startSmsVerification();
+
+            if ($oid) {
+                return response()->json(['success' => true, 'oid' => $oid]);
+            } else {
+                return response()->json(['success' => false, 'message' => 'SMS doğrulaması başlatılamadı. Telefon numaranız GİB Portalda kayıtlı olmayabilir.'], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'SMS başlatma hatası: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function completeGibSign(Request $request)
+    {
+        $setting = EDocumentSetting::first();
+
+        $code = $request->input('code');
+        $oid = $request->input('oid');
+        $documents = $request->input('documents', []); // Array of ETTNs
+
+        if (!$setting || empty($setting->gib_user_code) || !$code || !$oid || empty($documents)) {
+            return response()->json(['success' => false, 'message' => 'Eksik parametreler.'], 400);
+        }
+
+        try {
+            $gib = new \Mlevent\Fatura\Gib();
+            if ($setting->environment === 'test') {
+                $gib->setTestCredentials();
+            } else {
+                $gib->login($setting->gib_user_code, $setting->gib_password);
+            }
+
+            $result = $gib->completeSmsVerification($code, $oid, $documents);
+
+            if ($result) {
+                // If successful, generate PDF and upload to Trendyol in the background or right away
+                dispatch(new \App\Jobs\PushSignedInvoicesToTrendyol($documents));
+
+                return response()->json(['success' => true, 'message' => 'Faturalar başarıyla imzalandı.']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Hatalı SMS kodu veya onay başarısız.'], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'SMS onay hatası: ' . $e->getMessage()], 500);
+        }
+    }
 }

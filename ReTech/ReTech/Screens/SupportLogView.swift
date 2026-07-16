@@ -1,6 +1,6 @@
 //
 //  SupportLogView.swift
-//  ReTech
+//  Envanzo
 //
 
 import SwiftUI
@@ -40,7 +40,7 @@ struct SupportLogView: View {
     private var emptyView: some View {
         VStack(spacing: 14) {
             Image(systemName: "terminal").font(.system(size: 48)).foregroundColor(DS.textTertiary)
-            Text("Kayıt Yok").font(.system(size: 18, weight: .semibold)).foregroundColor(.white)
+            Text("Kayıt Yok").font(.system(size: 18, weight: .semibold)).foregroundColor(DS.textPrimary)
             Text("Uygulama kayıtları burada görünür.")
                 .font(.system(size: 13)).foregroundColor(DS.textSecondary)
         }

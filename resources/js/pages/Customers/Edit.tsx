@@ -78,7 +78,7 @@ export default function Edit({ customer }: { customer: any }) {
                                         value={data.name}
                                         onChange={e => setData('name', e.target.value)}
                                         required
-                                        placeholder="Örn: ReTech A.Ş."
+                                        placeholder="Örn: Envanzo A.Ş."
                                     />
                                 </div>
                                 <InputError message={errors.name} />

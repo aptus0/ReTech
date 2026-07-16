@@ -42,7 +42,7 @@ export default function AppHeaderLayout({
     const [needsFullscreenClick, setNeedsFullscreenClick] = useState(false);
 
     useEffect(() => {
-        const kioskEnabled = localStorage.getItem('retech_kiosk_mode') === 'true';
+        const kioskEnabled = localStorage.getItem('envanzo_kiosk_mode') === 'true';
 
         if (kioskEnabled) {
             setIsKioskMode(true);
@@ -53,7 +53,7 @@ export default function AppHeaderLayout({
         }
 
         const handleResize = () => {
-            const resolution = localStorage.getItem('retech_resolution') || 'Auto';
+            const resolution = localStorage.getItem('envanzo_resolution') || 'Auto';
             let scale = 1;
             const width = window.innerWidth;
             
@@ -85,7 +85,7 @@ scale = 1.5;
         window.addEventListener('resize', handleResize);
 
         const handleFullscreenChange = () => {
-            if (!document.fullscreenElement && localStorage.getItem('retech_kiosk_mode') === 'true') {
+            if (!document.fullscreenElement && localStorage.getItem('envanzo_kiosk_mode') === 'true') {
                 setShowKioskUnlock(true);
             }
         };
@@ -110,7 +110,7 @@ scale = 1.5;
         e.preventDefault();
 
         if (kioskPassword === '123456') {
-            localStorage.setItem('retech_kiosk_mode', 'false');
+            localStorage.setItem('envanzo_kiosk_mode', 'false');
             setIsKioskMode(false);
             setShowKioskUnlock(false);
             setKioskPassword('');

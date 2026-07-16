@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <StartupObject>LicenseKeygen.Program</StartupObject>
+  </PropertyGroup>
+
+  <!-- IMPORTANT: DevExpress requires a licensed NuGet feed setup on the compiling machine -->
+  <ItemGroup>
+    <PackageReference Include="DevExpress.Win.Navigation" Version="23.2.*" />
+    <PackageReference Include="DevExpress.Win.Grid" Version="23.2.*" />
+    <PackageReference Include="DevExpress.Win.Design" Version="23.2.*" />
+  </ItemGroup>
+
+</Project>

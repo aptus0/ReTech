@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace ReTechPrintService
+namespace EnvanzoPrintService
 {
     public class PrintWorker : BackgroundService
     {
@@ -33,7 +33,7 @@ namespace ReTechPrintService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("ReTech Print Service started at: {time}", DateTimeOffset.Now);
+            _logger.LogInformation("Envanzo Print Service started at: {time}", DateTimeOffset.Now);
 
             // Start HTTP Listener for local printer discovery
             _listener.Start();

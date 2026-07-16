@@ -1,13 +1,13 @@
 //
-//  ReTechUITestsLaunchTests.swift
-//  ReTechUITests
+//  EnvanzoUITestsLaunchTests.swift
+//  EnvanzoUITests
 //
 //  Created by ttsy0 on 6/27/26.
 //
 
 import XCTest
 
-final class ReTechUITestsLaunchTests: XCTestCase {
+final class EnvanzoUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

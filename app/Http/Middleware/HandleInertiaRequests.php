@@ -84,8 +84,8 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'name' => config('app.name', 'Re Tech Terminal'),
-            'store_name' => Setting::get('store_name', 'Re Tech Terminal'),
+            'name' => config('app.name', 'KobiX'),
+            'store_name' => Setting::get('store_name', 'KobiX'),
             'store_logo' => Setting::get('store_logo'),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'flash' => [

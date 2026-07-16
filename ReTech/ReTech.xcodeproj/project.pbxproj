@@ -12,50 +12,50 @@
 			containerPortal = 942436632FF0BD2B0002C21E /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 9424366A2FF0BD2B0002C21E;
-			remoteInfo = ReTech;
+			remoteInfo = Envanzo;
 		};
 		942436872FF0BD2C0002C21E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 942436632FF0BD2B0002C21E /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 9424366A2FF0BD2B0002C21E;
-			remoteInfo = ReTech;
+			remoteInfo = Envanzo;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9424366B2FF0BD2B0002C21E /* ReTech.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReTech.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9424367C2FF0BD2C0002C21E /* ReTechTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReTechTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		942436862FF0BD2C0002C21E /* ReTechUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReTechUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9424366B2FF0BD2B0002C21E /* Envanzo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Envanzo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9424367C2FF0BD2C0002C21E /* EnvanzoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EnvanzoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		942436862FF0BD2C0002C21E /* EnvanzoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EnvanzoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		9424368E2FF0BD2C0002C21E /* Exceptions for "ReTech" folder in "ReTech" target */ = {
+		9424368E2FF0BD2C0002C21E /* Exceptions for "Envanzo" folder in "Envanzo" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 9424366A2FF0BD2B0002C21E /* ReTech */;
+			target = 9424366A2FF0BD2B0002C21E /* Envanzo */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		9424366D2FF0BD2B0002C21E /* ReTech */ = {
+		9424366D2FF0BD2B0002C21E /* Envanzo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				9424368E2FF0BD2C0002C21E /* Exceptions for "ReTech" folder in "ReTech" target */,
+				9424368E2FF0BD2C0002C21E /* Exceptions for "Envanzo" folder in "Envanzo" target */,
 			);
-			path = ReTech;
+			path = Envanzo;
 			sourceTree = "<group>";
 		};
-		9424367F2FF0BD2C0002C21E /* ReTechTests */ = {
+		9424367F2FF0BD2C0002C21E /* EnvanzoTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ReTechTests;
+			path = EnvanzoTests;
 			sourceTree = "<group>";
 		};
-		942436892FF0BD2C0002C21E /* ReTechUITests */ = {
+		942436892FF0BD2C0002C21E /* EnvanzoUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ReTechUITests;
+			path = EnvanzoUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -88,9 +88,9 @@
 		942436622FF0BD2B0002C21E = {
 			isa = PBXGroup;
 			children = (
-				9424366D2FF0BD2B0002C21E /* ReTech */,
-				9424367F2FF0BD2C0002C21E /* ReTechTests */,
-				942436892FF0BD2C0002C21E /* ReTechUITests */,
+				9424366D2FF0BD2B0002C21E /* Envanzo */,
+				9424367F2FF0BD2C0002C21E /* EnvanzoTests */,
+				942436892FF0BD2C0002C21E /* EnvanzoUITests */,
 				9424366C2FF0BD2B0002C21E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -98,9 +98,9 @@
 		9424366C2FF0BD2B0002C21E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9424366B2FF0BD2B0002C21E /* ReTech.app */,
-				9424367C2FF0BD2C0002C21E /* ReTechTests.xctest */,
-				942436862FF0BD2C0002C21E /* ReTechUITests.xctest */,
+				9424366B2FF0BD2B0002C21E /* Envanzo.app */,
+				9424367C2FF0BD2C0002C21E /* EnvanzoTests.xctest */,
+				942436862FF0BD2C0002C21E /* EnvanzoUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,9 +108,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		9424366A2FF0BD2B0002C21E /* ReTech */ = {
+		9424366A2FF0BD2B0002C21E /* Envanzo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9424368F2FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "ReTech" */;
+			buildConfigurationList = 9424368F2FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "Envanzo" */;
 			buildPhases = (
 				942436672FF0BD2B0002C21E /* Sources */,
 				942436682FF0BD2B0002C21E /* Frameworks */,
@@ -121,18 +121,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				9424366D2FF0BD2B0002C21E /* ReTech */,
+				9424366D2FF0BD2B0002C21E /* Envanzo */,
 			);
-			name = ReTech;
+			name = Envanzo;
 			packageProductDependencies = (
 			);
-			productName = ReTech;
-			productReference = 9424366B2FF0BD2B0002C21E /* ReTech.app */;
+			productName = Envanzo;
+			productReference = 9424366B2FF0BD2B0002C21E /* Envanzo.app */;
 			productType = "com.apple.product-type.application";
 		};
-		9424367B2FF0BD2C0002C21E /* ReTechTests */ = {
+		9424367B2FF0BD2C0002C21E /* EnvanzoTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 942436942FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "ReTechTests" */;
+			buildConfigurationList = 942436942FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "EnvanzoTests" */;
 			buildPhases = (
 				942436782FF0BD2C0002C21E /* Sources */,
 				942436792FF0BD2C0002C21E /* Frameworks */,
@@ -144,18 +144,18 @@
 				9424367E2FF0BD2C0002C21E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				9424367F2FF0BD2C0002C21E /* ReTechTests */,
+				9424367F2FF0BD2C0002C21E /* EnvanzoTests */,
 			);
-			name = ReTechTests;
+			name = EnvanzoTests;
 			packageProductDependencies = (
 			);
-			productName = ReTechTests;
-			productReference = 9424367C2FF0BD2C0002C21E /* ReTechTests.xctest */;
+			productName = EnvanzoTests;
+			productReference = 9424367C2FF0BD2C0002C21E /* EnvanzoTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		942436852FF0BD2C0002C21E /* ReTechUITests */ = {
+		942436852FF0BD2C0002C21E /* EnvanzoUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 942436972FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "ReTechUITests" */;
+			buildConfigurationList = 942436972FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "EnvanzoUITests" */;
 			buildPhases = (
 				942436822FF0BD2C0002C21E /* Sources */,
 				942436832FF0BD2C0002C21E /* Frameworks */,
@@ -167,13 +167,13 @@
 				942436882FF0BD2C0002C21E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				942436892FF0BD2C0002C21E /* ReTechUITests */,
+				942436892FF0BD2C0002C21E /* EnvanzoUITests */,
 			);
-			name = ReTechUITests;
+			name = EnvanzoUITests;
 			packageProductDependencies = (
 			);
-			productName = ReTechUITests;
-			productReference = 942436862FF0BD2C0002C21E /* ReTechUITests.xctest */;
+			productName = EnvanzoUITests;
+			productReference = 942436862FF0BD2C0002C21E /* EnvanzoUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -199,7 +199,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 942436662FF0BD2B0002C21E /* Build configuration list for PBXProject "ReTech" */;
+			buildConfigurationList = 942436662FF0BD2B0002C21E /* Build configuration list for PBXProject "Envanzo" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -213,9 +213,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9424366A2FF0BD2B0002C21E /* ReTech */,
-				9424367B2FF0BD2C0002C21E /* ReTechTests */,
-				942436852FF0BD2C0002C21E /* ReTechUITests */,
+				9424366A2FF0BD2B0002C21E /* Envanzo */,
+				9424367B2FF0BD2C0002C21E /* EnvanzoTests */,
+				942436852FF0BD2C0002C21E /* EnvanzoUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -271,12 +271,12 @@
 /* Begin PBXTargetDependency section */
 		9424367E2FF0BD2C0002C21E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9424366A2FF0BD2B0002C21E /* ReTech */;
+			target = 9424366A2FF0BD2B0002C21E /* Envanzo */;
 			targetProxy = 9424367D2FF0BD2C0002C21E /* PBXContainerItemProxy */;
 		};
 		942436882FF0BD2C0002C21E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9424366A2FF0BD2B0002C21E /* ReTech */;
+			target = 9424366A2FF0BD2B0002C21E /* Envanzo */;
 			targetProxy = 942436872FF0BD2C0002C21E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -287,13 +287,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = ReTech/ReTech.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Envanzo/Envanzo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 35B7ZX5TY6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = ReTech/Info.plist;
+				INFOPLIST_FILE = Envanzo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Re Tech";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -306,7 +306,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = retech.ReTech;
+				PRODUCT_BUNDLE_IDENTIFIER = envanzo.Envanzo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -323,13 +323,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = ReTech/ReTech.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Envanzo/Envanzo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 35B7ZX5TY6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = ReTech/Info.plist;
+				INFOPLIST_FILE = Envanzo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Re Tech";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -342,7 +342,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = retech.ReTech;
+				PRODUCT_BUNDLE_IDENTIFIER = envanzo.Envanzo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -485,7 +485,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = retech.ReTechTests;
+				PRODUCT_BUNDLE_IDENTIFIER = envanzo.EnvanzoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -493,7 +493,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ReTech.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ReTech";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Envanzo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Envanzo";
 			};
 			name = Debug;
 		};
@@ -507,7 +507,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = retech.ReTechTests;
+				PRODUCT_BUNDLE_IDENTIFIER = envanzo.EnvanzoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -515,7 +515,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ReTech.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ReTech";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Envanzo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Envanzo";
 			};
 			name = Release;
 		};
@@ -527,7 +527,7 @@
 				DEVELOPMENT_TEAM = 35B7ZX5TY6;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = retech.ReTechUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = envanzo.EnvanzoUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -535,7 +535,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = ReTech;
+				TEST_TARGET_NAME = Envanzo;
 			};
 			name = Debug;
 		};
@@ -547,7 +547,7 @@
 				DEVELOPMENT_TEAM = 35B7ZX5TY6;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = retech.ReTechUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = envanzo.EnvanzoUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -555,14 +555,14 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = ReTech;
+				TEST_TARGET_NAME = Envanzo;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		942436662FF0BD2B0002C21E /* Build configuration list for PBXProject "ReTech" */ = {
+		942436662FF0BD2B0002C21E /* Build configuration list for PBXProject "Envanzo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				942436922FF0BD2C0002C21E /* Debug */,
@@ -571,7 +571,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9424368F2FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "ReTech" */ = {
+		9424368F2FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "Envanzo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				942436902FF0BD2C0002C21E /* Debug */,
@@ -580,7 +580,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		942436942FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "ReTechTests" */ = {
+		942436942FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "EnvanzoTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				942436952FF0BD2C0002C21E /* Debug */,
@@ -589,7 +589,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		942436972FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "ReTechUITests" */ = {
+		942436972FF0BD2C0002C21E /* Build configuration list for PBXNativeTarget "EnvanzoUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				942436982FF0BD2C0002C21E /* Debug */,

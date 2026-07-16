@@ -20,7 +20,7 @@ export default function Purchase() {
 
     const iban = "TR27 0004 6004 7888 8000 1596 66";
     const bankName = "Akbank";
-    const accountName = "ReTech Yazılım Teknolojileri A.Ş.";
+    const accountName = "Envanzo Yazılım Teknolojileri A.Ş.";
 
     useEffect(() => {
         if (pending_request && pending_request.status === 'pending') {
@@ -111,7 +111,7 @@ export default function Purchase() {
 
             <div className="text-center mb-12 max-w-2xl mx-auto">
                 <h1 className="text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white mb-4">
-                    ReTech Terminal Lisansı
+                    Envanzo Terminal Lisansı
                 </h1>
                 <p className="text-lg text-neutral-600 dark:text-neutral-400">
                     Sisteminizin kesintisiz çalışması ve tüm özelliklerden faydalanabilmeniz için lisansınızı aktifleştirin.
@@ -125,7 +125,7 @@ export default function Purchase() {
                             Tam Sürüm
                         </div>
                         <div className="mb-6 text-center mt-2">
-                            <h3 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">ReTech Aylık Lisans</h3>
+                            <h3 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Envanzo Aylık Lisans</h3>
                             <p className="text-neutral-500 dark:text-neutral-400 text-sm">Tüm premium özellikler dahil</p>
                         </div>
                         <div className="mb-8 flex items-baseline justify-center">

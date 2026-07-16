@@ -7,6 +7,8 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useState, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
+import { CalendarDays, Package, Tags, AlertTriangle, ArrowUpRight, ArrowDownRight, Server, Activity, Cpu } from 'lucide-react';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 
-export default function Dashboard({ stats, latestMovements, calendarEvents }: { stats: any, latestMovements: any[], calendarEvents: any[] }) {
+export default function Dashboard({ stats, latestMovements, calendarEvents, salesChartData }: { stats: any, latestMovements: any[], calendarEvents: any[], salesChartData: any[] }) {
     const calendarRef = useRef<FullCalendar>(null);
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     
@@ -26,48 +28,34 @@ export default function Dashboard({ stats, latestMovements, calendarEvents }: { 
     
     useEffect(() => {
         const fetchStatus = () => {
-            fetch('/api/mobile/system/status')
+            fetch('/api/system-status')
                 .then(res => res.json())
                 .then(data => setSystemStatus(data))
                 .catch(err => console.error("Status fetch error", err));
         };
-        fetchStatus(); // initial call
-        const interval = setInterval(fetchStatus, 3000); // 3 seconds
-
-        return () => clearInterval(interval);
-    }, []);
-    
-    useEffect(() => {
-        const fetchStatus = () => {
-            fetch('/api/mobile/system/status')
-                .then(res => res.json())
-                .then(data => setSystemStatus(data))
-                .catch(err => console.error("Status fetch error", err));
-        };
-        fetchStatus(); // initial call
-        const interval = setInterval(fetchStatus, 3000); // 3 seconds
+        fetchStatus();
+        const interval = setInterval(fetchStatus, 5000);
 
         return () => clearInterval(interval);
     }, []);
 
-    const { data: eventData, setData: setEventData, post, processing, reset, errors } = useForm({
+    const { data: eventData, setData: setEventData, post, processing, reset } = useForm({
         title: '',
         description: '',
         start: new Date(),
         end: new Date(),
         all_day: true,
-        color: '#ea580c'
+        color: '#2563eb' // Default KobiX Blue
     });
 
-    // FullCalendar Events
     const events = calendarEvents ? calendarEvents.map(ev => ({
         id: String(ev.id),
         title: ev.title,
         start: ev.start,
         end: ev.end,
         allDay: ev.all_day == 1 || ev.all_day == true,
-        backgroundColor: ev.color || '#ea580c',
-        borderColor: ev.color || '#ea580c',
+        backgroundColor: ev.color || '#2563eb',
+        borderColor: ev.color || '#2563eb',
         extendedProps: {
             description: ev.description
         }
@@ -81,7 +69,7 @@ export default function Dashboard({ stats, latestMovements, calendarEvents }: { 
             all_day: selectInfo.allDay
         });
         setIsEventModalOpen(true);
-        selectInfo.view.calendar.unselect(); // clear date selection
+        selectInfo.view.calendar.unselect();
     };
 
     const handleEventSubmit = (e: React.FormEvent) => {
@@ -124,202 +112,273 @@ export default function Dashboard({ stats, latestMovements, calendarEvents }: { 
         });
     };
 
-    const [contextMenu, setContextMenu] = useState<{ x: number; y: number; show: boolean }>({ x: 0, y: 0, show: false });
-
-    const handleContextMenu = (e: React.MouseEvent) => {
-        e.preventDefault();
-        setContextMenu({ x: e.pageX, y: e.pageY, show: true });
-    };
-
-    const closeContextMenu = () => {
-        if (contextMenu.show) {
-            setContextMenu({ ...contextMenu, show: false });
-        }
-    };
-
     return (
         <>
             <Head title="Dashboard" />
-            <div className="flex h-[calc(100vh-64px)] flex-1 flex-col p-4 md:p-6 gap-6" onClick={closeContextMenu}>
-                {/* LIVE SYSTEM STATUS PANEL */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 shadow-sm flex flex-col justify-center">
-                        <div className="text-sm font-semibold text-neutral-500 mb-1 flex justify-between">
-                            <span>CPU Kullanımı</span>
-                            <span className="text-orange-600">{systemStatus.cpu}%</span>
+            <div className="flex-1 space-y-6 p-4 md:p-6 max-w-7xl mx-auto w-full pb-20">
+                {/* STAT CARDS */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 p-6 text-white shadow-xl shadow-blue-900/20">
+                        <div className="absolute -right-6 -top-6 text-white/10">
+                            <Package className="h-32 w-32" />
                         </div>
-                        <div className="w-full bg-neutral-200 dark:bg-neutral-800 rounded-full h-2.5">
-                            <div className="bg-orange-500 h-2.5 rounded-full transition-all duration-500" style={{ width: `${systemStatus.cpu}%` }}></div>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 shadow-sm flex flex-col justify-center">
-                        <div className="text-sm font-semibold text-neutral-500 mb-1 flex justify-between">
-                            <span>RAM Tüketimi</span>
-                            <span className="text-blue-600">{systemStatus.ram}%</span>
-                        </div>
-                        <div className="w-full bg-neutral-200 dark:bg-neutral-800 rounded-full h-2.5">
-                            <div className="bg-blue-500 h-2.5 rounded-full transition-all duration-500" style={{ width: `${systemStatus.ram}%` }}></div>
+                        <div className="relative z-10 flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-blue-100">Toplam Ürün</p>
+                                <p className="mt-1 text-3xl font-bold tracking-tight">{stats?.totalProducts || 0}</p>
+                            </div>
+                            <div className="rounded-xl bg-white/20 p-3 backdrop-blur-md">
+                                <Package className="h-6 w-6 text-white" />
+                            </div>
                         </div>
                     </div>
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 shadow-sm flex items-center gap-3">
-                        <div className="bg-green-100 dark:bg-green-900/30 p-2.5 rounded-lg text-green-600">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        </div>
-                        <div>
-                            <div className="text-xs font-semibold text-neutral-500">İç Ağ IP (LAN)</div>
-                            <div className="font-mono text-sm font-medium">{systemStatus.internal_ip}</div>
+
+                    <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-[#0A0F1C] border border-blue-100 dark:border-blue-900/30 p-6 shadow-xl shadow-neutral-200/40 dark:shadow-blue-900/10">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Aktif Ürünler</p>
+                                <p className="mt-1 text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">{stats?.activeProducts || 0}</p>
+                            </div>
+                            <div className="rounded-xl bg-green-50 dark:bg-green-500/10 p-3">
+                                <Activity className="h-6 w-6 text-green-600 dark:text-green-400" />
+                            </div>
                         </div>
                     </div>
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 shadow-sm flex items-center gap-3">
-                        <div className="bg-purple-100 dark:bg-purple-900/30 p-2.5 rounded-lg text-purple-600">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+
+                    <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-[#0A0F1C] border border-blue-100 dark:border-blue-900/30 p-6 shadow-xl shadow-neutral-200/40 dark:shadow-blue-900/10">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Toplam Kategori</p>
+                                <p className="mt-1 text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">{stats?.totalCategories || 0}</p>
+                            </div>
+                            <div className="rounded-xl bg-blue-50 dark:bg-blue-500/10 p-3">
+                                <Tags className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                            </div>
                         </div>
-                        <div>
-                            <div className="text-xs font-semibold text-neutral-500">Dış IP (WAN)</div>
-                            <div className="font-mono text-sm font-medium">{systemStatus.external_ip}</div>
+                    </div>
+
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 p-6 text-white shadow-xl shadow-rose-900/20">
+                        <div className="absolute -right-6 -top-6 text-white/10">
+                            <AlertTriangle className="h-32 w-32" />
+                        </div>
+                        <div className="relative z-10 flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-rose-100">Kritik Stok</p>
+                                <p className="mt-1 text-3xl font-bold tracking-tight">{stats?.lowStockProductsCount || 0}</p>
+                            </div>
+                            <div className="rounded-xl bg-white/20 p-3 backdrop-blur-md">
+                                <AlertTriangle className="h-6 w-6 text-white" />
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-neutral-950 shadow-lg flex-1 flex flex-col overflow-hidden relative border border-neutral-200 dark:border-neutral-800 rounded-xl">
-                    <div className="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 p-4 flex justify-between items-center z-10">
-                        <h2 className="font-bold text-xl flex items-center text-neutral-800 dark:text-neutral-100">
-                            <svg className="w-6 h-6 mr-2 text-orange-600 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                            ReTech Profesyonel Ajanda
-                        </h2>
-                        <div className="flex items-center gap-2">
-                            <Button 
-                                variant="outline" 
-                                className="bg-white dark:bg-neutral-800"
-                                onClick={() => {
-                                    if(calendarRef.current) {
-                                        calendarRef.current.getApi().today();
-                                    }
-                                }}
-                            >
-                                Bugüne Dön
-                            </Button>
-                            <Button className="bg-orange-600 hover:bg-orange-700 text-white shadow-md shadow-orange-600/20" onClick={() => setIsEventModalOpen(true)}>
-                                ➕ Yeni Not Ekle
-                            </Button>
+                {/* CHARTS ROW */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                    <div className="bg-white dark:bg-[#0A0F1C] border border-blue-100 dark:border-blue-900/30 shadow-xl shadow-neutral-200/40 dark:shadow-blue-900/10 rounded-2xl p-6">
+                        <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-4 flex items-center gap-2">
+                            <Activity className="h-5 w-5 text-blue-600" />
+                            Haftalık Satış Grafiği
+                        </h3>
+                        <div className="h-72">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={salesChartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" dark={{ stroke: "#1e3a8a" }} />
+                                    <XAxis dataKey="name" stroke="#6b7280" fontSize={12} />
+                                    <YAxis stroke="#6b7280" fontSize={12} />
+                                    <RechartsTooltip 
+                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--tw-bg-opacity, #fff)' }} 
+                                        itemStyle={{ color: '#111827' }}
+                                    />
+                                    <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                                    <Line type="monotone" name="Satış (₺)" dataKey="sales" stroke="#2563eb" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                                </LineChart>
+                            </ResponsiveContainer>
                         </div>
                     </div>
-                    
-                    <div className="flex-1 p-2 md:p-4 lg:p-6 overflow-y-auto custom-scrollbar" onContextMenu={handleContextMenu}>
-                        <style dangerouslySetInnerHTML={{__html: `
-                            .fc { font-family: inherit; height: 100%; min-height: 700px; }
-                            .fc .fc-toolbar-title { font-weight: 700; font-size: 1.5rem; color: #1f2937; }
-                            .dark .fc .fc-toolbar-title { color: #f3f4f6; }
-                            .fc-theme-standard td, .fc-theme-standard th { border-color: #e5e7eb; }
-                            .dark .fc-theme-standard td, .dark .fc-theme-standard th { border-color: #374151; }
-                            .fc-theme-standard .fc-scrollgrid { border-color: #e5e7eb; border-radius: 8px; overflow: hidden; }
-                            .dark .fc-theme-standard .fc-scrollgrid { border-color: #374151; }
-                            
-                            /* Header Buttons */
-                            .fc .fc-button-primary { background-color: #ea580c !important; border-color: #ea580c !important; font-weight: 600; text-transform: capitalize; padding: 0.4rem 1rem; border-radius: 6px; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
-                            .fc .fc-button-primary:hover { background-color: #c2410c !important; border-color: #c2410c !important; }
-                            .fc .fc-button-primary:disabled { background-color: #fdba74 !important; border-color: #fdba74 !important; }
-                            .fc .fc-button-active { background-color: #9a3412 !important; border-color: #9a3412 !important; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.1) !important; }
-                            
-                            /* Today Highlight */
-                            .fc .fc-day-today { background-color: #fff7ed !important; }
-                            .dark .fc .fc-day-today { background-color: #431407 !important; }
-                            
-                            /* Events */
-                            .fc-event { cursor: pointer; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 2px 4px; font-weight: 500; font-size: 0.85rem; border: none !important; transition: transform 0.1s ease, box-shadow 0.1s ease; }
-                            .fc-event:hover { transform: scale(1.02); box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; }
-                            .fc-event-main { color: #fff !important; }
-                            
-                            /* List View */
-                            .fc-list-event:hover td { background-color: #f9fafb; }
-                            .dark .fc-list-event:hover td { background-color: #1f2937; }
-                            .fc-list-day-cushion { background-color: #f3f4f6 !important; }
-                            .dark .fc-list-day-cushion { background-color: #111827 !important; color: white !important;}
-                        `}} />
-                        <FullCalendar
-                            ref={calendarRef}
-                            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
-                            initialView="dayGridMonth"
-                            locales={[trLocale]}
-                            locale="tr"
-                            headerToolbar={{
-                                left: 'prev,next today',
-                                center: 'title',
-                                right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
-                            }}
-                            events={events}
-                            selectable={true}
-                            selectMirror={true}
-                            dayMaxEvents={true}
-                            weekends={true}
-                            editable={true} // enables drag and drop
-                            droppable={true}
-                            select={handleDateSelect}
-                            eventClick={handleEventClick}
-                            eventDrop={handleEventDrop}
-                            eventResize={handleEventResize}
-                            height="100%"
-                            contentHeight="auto"
-                            aspectRatio={1.5}
-                            eventTimeFormat={{
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                meridiem: false,
-                                hour12: false
-                            }}
-                        />
-                    </div>
-                    
-                    {contextMenu.show && (
-                        <div 
-                            className="fixed z-50 min-w-[200px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-lg overflow-hidden py-1 transform scale-100 transition-all"
-                            style={{ top: contextMenu.y, left: contextMenu.x }}
-                        >
-                            <button className="w-full text-left px-4 py-2.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-sm font-medium transition-colors" onClick={() => {
-                                setIsEventModalOpen(true); setContextMenu({ ...contextMenu, show: false }); 
-                            }}>
-                                ➕ Yeni Not Ekle
-                            </button>
-                            <button className="w-full text-left px-4 py-2.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-sm font-medium transition-colors" onClick={() => {
-                                if(calendarRef.current) {
-calendarRef.current.getApi().today();
-}
 
-                                setContextMenu({ ...contextMenu, show: false }); 
-                            }}>
-                                📅 Bugüne Git
-                            </button>
-                            <div className="h-px bg-neutral-200 dark:bg-neutral-800 my-1"></div>
-                            <button className="w-full text-left px-4 py-2.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-sm font-medium text-red-600 transition-colors" onClick={() => setContextMenu({ ...contextMenu, show: false })}>
-                                ❌ İptal
-                            </button>
+                    <div className="bg-white dark:bg-[#0A0F1C] border border-blue-100 dark:border-blue-900/30 shadow-xl shadow-neutral-200/40 dark:shadow-blue-900/10 rounded-2xl p-6">
+                        <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-4 flex items-center gap-2">
+                            <Package className="h-5 w-5 text-indigo-600" />
+                            Sipariş ve Sepet Etkileşimleri
+                        </h3>
+                        <div className="h-72">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={salesChartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                    <XAxis dataKey="name" stroke="#6b7280" fontSize={12} />
+                                    <YAxis stroke="#6b7280" fontSize={12} />
+                                    <RechartsTooltip 
+                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} 
+                                        itemStyle={{ color: '#111827' }}
+                                    />
+                                    <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                                    <Bar name="Sipariş" dataKey="orders" fill="#4f46e5" radius={[4, 4, 0, 0]} />
+                                    <Bar name="Sepet" dataKey="carts" fill="#10b981" radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
                         </div>
-                    )}
+                    </div>
+                </div>
+
+                {/* MAIN GRID */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+                    {/* CALENDAR COLUMN */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <div className="bg-white dark:bg-[#0A0F1C] border border-blue-100 dark:border-blue-900/30 shadow-xl shadow-neutral-200/40 dark:shadow-blue-900/10 rounded-2xl overflow-hidden flex flex-col">
+                            <div className="border-b border-neutral-100 dark:border-blue-900/20 px-6 py-4 flex items-center justify-between bg-blue-50/50 dark:bg-blue-900/10">
+                                <h2 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 flex items-center gap-2">
+                                    <CalendarDays className="h-5 w-5 text-blue-600" />
+                                    KobiX Ajanda
+                                </h2>
+                                <Button size="sm" onClick={() => setIsEventModalOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 shadow-md shadow-blue-600/20 transition-all">
+                                    + Yeni Not
+                                </Button>
+                            </div>
+                            <div className="p-4" style={{ minHeight: '600px' }}>
+                                <style dangerouslySetInnerHTML={{__html: `
+                                    .fc { font-family: inherit; height: 100%; min-height: 550px; }
+                                    .fc .fc-toolbar-title { font-weight: 700; font-size: 1.25rem; color: #1e40af; }
+                                    .dark .fc .fc-toolbar-title { color: #60a5fa; }
+                                    .fc-theme-standard td, .fc-theme-standard th { border-color: #f1f5f9; }
+                                    .dark .fc-theme-standard td, .dark .fc-theme-standard th { border-color: #1e3a8a; }
+                                    .fc-theme-standard .fc-scrollgrid { border-color: #f1f5f9; border-radius: 12px; overflow: hidden; }
+                                    .dark .fc-theme-standard .fc-scrollgrid { border-color: #1e3a8a; }
+                                    
+                                    .fc .fc-button-primary { background-color: #2563eb !important; border-color: #2563eb !important; font-weight: 500; text-transform: capitalize; padding: 0.35rem 0.75rem; border-radius: 8px; font-size: 0.875rem; transition: all 0.2s; }
+                                    .fc .fc-button-primary:hover { background-color: #1d4ed8 !important; border-color: #1d4ed8 !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
+                                    
+                                    .fc .fc-day-today { background-color: #eff6ff !important; }
+                                    .dark .fc .fc-day-today { background-color: #1e3a8a !important; }
+                                    
+                                    .fc-event { cursor: pointer; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 2px 6px; font-weight: 500; font-size: 0.8rem; border: none !important; transition: transform 0.1s ease; }
+                                    .fc-event:hover { transform: scale(1.02); z-index: 10; }
+                                    .fc-event-main { color: #fff !important; }
+                                    
+                                    .fc-list-day-cushion { background-color: #f8fafc !important; }
+                                    .dark .fc-list-day-cushion { background-color: #0f172a !important; color: white !important;}
+                                `}} />
+                                <FullCalendar
+                                    ref={calendarRef}
+                                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+                                    initialView="dayGridMonth"
+                                    locales={[trLocale]}
+                                    locale="tr"
+                                    headerToolbar={{
+                                        left: 'prev,next today',
+                                        center: 'title',
+                                        right: 'dayGridMonth,timeGridWeek,listMonth'
+                                    }}
+                                    events={events}
+                                    selectable={true}
+                                    selectMirror={true}
+                                    dayMaxEvents={true}
+                                    weekends={true}
+                                    editable={true}
+                                    droppable={true}
+                                    select={handleDateSelect}
+                                    eventClick={handleEventClick}
+                                    eventDrop={handleEventDrop}
+                                    eventResize={handleEventResize}
+                                    height="100%"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* SIDE COLUMN */}
+                    <div className="space-y-6">
+                        {/* SYSTEM STATUS PANEL */}
+                        <div className="bg-white dark:bg-[#0A0F1C] border border-blue-100 dark:border-blue-900/30 shadow-xl shadow-neutral-200/40 dark:shadow-blue-900/10 rounded-2xl overflow-hidden p-6 relative">
+                            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                                <Server className="h-24 w-24" />
+                            </div>
+                            <h3 className="text-sm font-bold tracking-wider text-neutral-400 uppercase mb-4 flex items-center gap-2">
+                                <Cpu className="h-4 w-4" /> Sistem Durumu
+                            </h3>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <div className="text-xs font-semibold text-neutral-500 mb-1 flex justify-between">
+                                        <span>CPU Kullanımı</span>
+                                        <span className="text-blue-600 dark:text-blue-400">{systemStatus.cpu}%</span>
+                                    </div>
+                                    <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-full h-1.5">
+                                        <div className="bg-blue-600 h-1.5 rounded-full transition-all duration-500" style={{ width: `${systemStatus.cpu}%` }}></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="text-xs font-semibold text-neutral-500 mb-1 flex justify-between">
+                                        <span>RAM Tüketimi</span>
+                                        <span className="text-indigo-600 dark:text-indigo-400">{systemStatus.ram}%</span>
+                                    </div>
+                                    <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-full h-1.5">
+                                        <div className="bg-indigo-600 h-1.5 rounded-full transition-all duration-500" style={{ width: `${systemStatus.ram}%` }}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* LATEST MOVEMENTS */}
+                        <div className="bg-white dark:bg-[#0A0F1C] border border-blue-100 dark:border-blue-900/30 shadow-xl shadow-neutral-200/40 dark:shadow-blue-900/10 rounded-2xl overflow-hidden">
+                            <div className="border-b border-neutral-100 dark:border-blue-900/20 px-6 py-4 flex justify-between items-center bg-blue-50/30 dark:bg-blue-900/10">
+                                <h3 className="font-semibold text-neutral-800 dark:text-neutral-200">Son Stok Hareketleri</h3>
+                                <Link href="/stock-movements" className="text-xs text-blue-600 hover:text-blue-700 font-medium">Tümünü Gör</Link>
+                            </div>
+                            <div className="p-2">
+                                {latestMovements && latestMovements.length > 0 ? (
+                                    <div className="divide-y divide-neutral-100 dark:divide-blue-900/20">
+                                        {latestMovements.map((movement: any) => (
+                                            <div key={movement.id} className="p-3 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-blue-900/10 rounded-xl transition-colors">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`p-2 rounded-lg ${movement.type === 'in' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400'}`}>
+                                                        {movement.type === 'in' ? <ArrowDownRight className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 line-clamp-1">{movement.product?.name || 'Bilinmeyen Ürün'}</p>
+                                                        <p className="text-xs text-neutral-500">{new Date(movement.created_at).toLocaleDateString('tr-TR')}</p>
+                                                    </div>
+                                                </div>
+                                                <div className={`text-sm font-bold ${movement.type === 'in' ? 'text-green-600' : 'text-rose-600'}`}>
+                                                    {movement.type === 'in' ? '+' : '-'}{movement.quantity}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="p-8 text-center text-neutral-500 text-sm">
+                                        Henüz stok hareketi bulunmuyor.
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            {/* EVENT MODAL */}
             <Dialog open={isEventModalOpen} onOpenChange={setIsEventModalOpen}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-[425px] border-blue-100 dark:border-blue-900 shadow-2xl">
                     <DialogHeader>
-                        <DialogTitle className="text-xl">Yeni Takvim Notu</DialogTitle>
+                        <DialogTitle className="text-xl text-blue-900 dark:text-blue-100">Yeni Takvim Notu</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleEventSubmit} className="space-y-5 mt-4">
                         <div className="space-y-2">
-                            <Label>Not Başlığı <span className="text-red-500">*</span></Label>
-                            <Input value={eventData.title} onChange={e => setEventData('title', e.target.value)} required placeholder="Örn: Kira Ödemesi, Müşteri Görüşmesi" className="h-11" />
+                            <Label>Not Başlığı <span className="text-rose-500">*</span></Label>
+                            <Input value={eventData.title} onChange={e => setEventData('title', e.target.value)} required placeholder="Örn: Müşteri Görüşmesi" className="h-11 focus-visible:ring-blue-600" />
                         </div>
                         <div className="space-y-2">
                             <Label>Açıklama (Opsiyonel)</Label>
-                            <Input value={eventData.description} onChange={e => setEventData('description', e.target.value)} placeholder="Detaylı bilgi..." className="h-11" />
+                            <Input value={eventData.description} onChange={e => setEventData('description', e.target.value)} placeholder="Detaylı bilgi..." className="h-11 focus-visible:ring-blue-600" />
                         </div>
                         <div className="space-y-3 pt-2">
                             <Label>Etiket Rengi</Label>
                             <div className="flex gap-3 justify-between">
-                                {['#ea580c', '#16a34a', '#2563eb', '#dc2626', '#9333ea', '#4f46e5', '#0891b2'].map(color => (
+                                {['#2563eb', '#0891b2', '#16a34a', '#eab308', '#f97316', '#dc2626', '#9333ea'].map(color => (
                                     <button
                                         key={color}
                                         type="button"
-                                        className={`w-9 h-9 rounded-full shadow-sm transition-all ${eventData.color === color ? 'ring-2 ring-offset-2 ring-neutral-800 dark:ring-neutral-200 dark:ring-offset-neutral-900 scale-110' : 'hover:scale-105'}`}
+                                        className={`w-9 h-9 rounded-full shadow-sm transition-all ${eventData.color === color ? 'ring-2 ring-offset-2 ring-blue-600 dark:ring-offset-neutral-900 scale-110' : 'hover:scale-105'}`}
                                         style={{ backgroundColor: color }}
                                         onClick={() => setEventData('color', color)}
                                     />
@@ -327,8 +386,8 @@ calendarRef.current.getApi().today();
                             </div>
                         </div>
                         <DialogFooter className="mt-8 gap-2">
-                            <Button type="button" variant="outline" className="h-11 rounded-full px-6" onClick={() => setIsEventModalOpen(false)}>İptal</Button>
-                            <Button type="submit" disabled={processing} className="h-11 rounded-full px-8 bg-orange-600 hover:bg-orange-700 shadow-md shadow-orange-600/20">Kaydet</Button>
+                            <Button type="button" variant="ghost" className="h-11 rounded-xl px-6" onClick={() => setIsEventModalOpen(false)}>İptal</Button>
+                            <Button type="submit" disabled={processing} className="h-11 rounded-xl px-8 bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 text-white">Kaydet</Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>

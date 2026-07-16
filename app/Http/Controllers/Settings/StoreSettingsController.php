@@ -11,7 +11,7 @@ class StoreSettingsController extends Controller
     public function edit()
     {
         return inertia('settings/store', [
-            'storeName' => Setting::get('store_name', 'Re Tech Terminal'),
+            'storeName' => Setting::get('store_name', 'KobiX'),
             'storeLogo' => Setting::get('store_logo'),
             'companyName' => Setting::get('company_name', ''),
             'phone' => Setting::get('phone', ''),

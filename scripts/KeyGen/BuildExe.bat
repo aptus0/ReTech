@@ -1,9 +1,9 @@
 @echo off
-title ReTech KeyGen Builder
+title Envanzo KeyGen Builder
 color 0A
 
 echo ========================================================
-echo ReTech KeyGen (LicenseGenerator.cs) Derleyici Basliyor...
+echo Envanzo KeyGen (LicenseGenerator.cs) Derleyici Basliyor...
 echo ========================================================
 
 :: .NET Framework yolunu bul
@@ -18,7 +18,7 @@ if not exist "%CSC_PATH%" (
 echo [BİLGİ] C# Derleyicisi (csc.exe) bulundu.
 echo [BİLGİ] LicenseGenerator.cs derleniyor...
 
-"%CSC_PATH%" /target:exe /out:ReTech_KeyGen.exe LicenseGenerator.cs
+"%CSC_PATH%" /target:exe /out:Envanzo_KeyGen.exe LicenseGenerator.cs
 
 if %errorlevel% neq 0 (
     echo [HATA] Derleme sirasinda bir hata olustu!
@@ -28,7 +28,7 @@ if %errorlevel% neq 0 (
 
 echo.
 echo ========================================================
-echo [BASARILI] ReTech_KeyGen.exe basariyla olusturuldu!
+echo [BASARILI] Envanzo_KeyGen.exe basariyla olusturuldu!
 echo ========================================================
 echo.
 pause

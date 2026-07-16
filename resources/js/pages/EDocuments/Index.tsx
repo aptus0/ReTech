@@ -9,7 +9,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
+import GibInvoiceTab from './components/GibInvoiceTab';
 
 export default function Index({ invoices, filters, stats }: { invoices: any, filters: any, stats: any }) {
     const [processingIds, setProcessingIds] = useState<number[]>([]);
@@ -127,32 +129,41 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                     </Card>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 rounded-xl border bg-card p-4 shadow-sm">
-                    <form onSubmit={handleSearch} className="flex flex-1 items-center gap-4">
-                        <div className="relative w-full max-w-md">
-                            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                                placeholder="ERP Fatura No, GİB No veya Cari Ara..." 
-                                value={searchData.search} 
-                                onChange={e => setSearchData('search', e.target.value)} 
-                                className="pl-9 h-11"
-                            />
+                <Tabs defaultValue="local" className="flex-1 flex flex-col">
+                    <div className="flex justify-between items-center mb-4">
+                        <TabsList className="bg-neutral-100 dark:bg-neutral-800 p-1">
+                            <TabsTrigger value="local" className="px-6 data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900">Sistem Faturaları</TabsTrigger>
+                            <TabsTrigger value="gib" className="px-6 data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900">GİB Portal Canlı Veri</TabsTrigger>
+                        </TabsList>
+                    </div>
+
+                    <TabsContent value="local" className="m-0 flex-1 flex flex-col">
+                        <div className="flex items-center justify-between gap-4 rounded-xl border bg-card p-4 shadow-sm mb-4">
+                            <form onSubmit={handleSearch} className="flex flex-1 items-center gap-4">
+                                <div className="relative w-full max-w-md">
+                                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                    <Input 
+                                        placeholder="ERP Fatura No, GİB No veya Cari Ara..." 
+                                        value={searchData.search} 
+                                        onChange={e => setSearchData('search', e.target.value)} 
+                                        className="pl-9 h-11"
+                                    />
+                                </div>
+                                <Select value={searchData.status} onValueChange={handleStatusFilter}>
+                                    <SelectTrigger className="w-[180px] h-11">
+                                        <SelectValue placeholder="Tüm Durumlar" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Tüm Durumlar</SelectItem>
+                                        <SelectItem value="draft">Taslak (Bekliyor)</SelectItem>
+                                        <SelectItem value="sent">GİB'e İletildi</SelectItem>
+                                        <SelectItem value="accepted">Onaylandı</SelectItem>
+                                        <SelectItem value="failed">Hatalı</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <Button type="submit" variant="secondary" className="h-11 px-6">Filtrele</Button>
+                            </form>
                         </div>
-                        <Select value={searchData.status} onValueChange={handleStatusFilter}>
-                            <SelectTrigger className="w-[180px] h-11">
-                                <SelectValue placeholder="Tüm Durumlar" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Tüm Durumlar</SelectItem>
-                                <SelectItem value="draft">Taslak (Bekliyor)</SelectItem>
-                                <SelectItem value="sent">GİB'e İletildi</SelectItem>
-                                <SelectItem value="accepted">Onaylandı</SelectItem>
-                                <SelectItem value="failed">Hatalı</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <Button type="submit" variant="secondary" className="h-11 px-6">Filtrele</Button>
-                    </form>
-                </div>
 
                 <div className="rounded-xl border bg-card shadow-sm overflow-hidden flex-1">
                     <div className="overflow-x-auto">
@@ -248,6 +259,12 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                         </table>
                     </div>
                 </div>
+                </TabsContent>
+
+                <TabsContent value="gib" className="m-0 flex-1 flex flex-col h-full">
+                    <GibInvoiceTab />
+                </TabsContent>
+            </Tabs>
             </div>
 
             <Sheet open={!!previewInvoice} onOpenChange={(o) => !o && setPreviewInvoice(null)}>
@@ -276,7 +293,7 @@ export default function Index({ invoices, filters, stats }: { invoices: any, fil
                                 </div>
                                 <div className="flex justify-between items-start mb-12">
                                     <div className="max-w-[50%]">
-                                        <h3 className="text-xl font-bold mb-2">RETECH MAĞAZACILIK A.Ş.</h3>
+                                        <h3 className="text-xl font-bold mb-2">ENVANZO MAĞAZACILIK A.Ş.</h3>
                                         <p className="text-neutral-500">Mecidiyeköy Mah. Büyükdere Cad. No:12<br/>Şişli / İSTANBUL<br/>VD: Şişli - 1234567890</p>
                                     </div>
                                     <div className="text-right">

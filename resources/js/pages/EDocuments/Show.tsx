@@ -404,7 +404,7 @@ return;
                                 </table>
                                 
                                 <div className="text-center mt-8">
-                                    <p className="text-[10px] text-neutral-400">Re Tech Terminal tarafından mali mühür ile imzalanmıştır.</p>
+                                    <p className="text-[10px] text-neutral-400">KobiX tarafından mali mühür ile imzalanmıştır.</p>
                                 </div>
                             </div>
                         </div>

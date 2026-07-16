@@ -1,6 +1,6 @@
 //
 //  ProductDetailView.swift
-//  ReTech
+//  Envanzo
 //
 
 import SwiftUI

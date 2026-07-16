@@ -66,7 +66,8 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        DB::transaction(function () use ($request) {
+        $product = null;
+        DB::transaction(function () use ($request, &$product) {
             $data = $request->validated();
             $openingStock = $data['opening_stock'];
             unset($data['opening_stock']);
@@ -90,6 +91,11 @@ class ProductController extends Controller
                 ]);
             }
         });
+
+        // Yeni eklenen ürünü Trendyol'a otomatik gönder
+        if ($product) {
+            \App\Http\Controllers\MarketplaceProductController::pushSingleProductToTrendyol($product);
+        }
 
         return redirect()->route('products.index')->with('success', 'Ürün başarıyla oluşturuldu.');
     }

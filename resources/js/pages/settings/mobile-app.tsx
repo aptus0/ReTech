@@ -23,7 +23,7 @@ export default function MobileApp({ serverIp, apiToken }: { serverIp: string, ap
                     <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl"></div>
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="max-w-2xl">
-                            <h1 className="text-4xl font-extrabold tracking-tight mb-3">ReTech Mobile'ı Bağlayın</h1>
+                            <h1 className="text-4xl font-extrabold tracking-tight mb-3">Envanzo Mobile'ı Bağlayın</h1>
                             <p className="text-orange-50 text-lg font-medium opacity-90 leading-relaxed">
                                 El terminalinizden barkod okutmak, sayım yapmak ve hızlı stok yönetimi için mobil uygulamayı anında siteme entegre edin.
                             </p>
@@ -73,7 +73,7 @@ export default function MobileApp({ serverIp, apiToken }: { serverIp: string, ap
                                 <ShieldCheck className="w-5 h-5 text-green-500 mr-2" /> Manuel Bağlantı Bilgileri
                             </h3>
                             <p className="text-sm text-neutral-500 mb-6">
-                                Kameranız bozuksa veya QR okutamıyorsanız, mobil uygulamadaki <strong>Manuel Giriş</strong> ekranına aşağıdaki bilgileri yazabilirsiniz. <br/><span className="text-orange-500">Not: Güvenliğiniz için uygulama doğrudan Veritabanına (MySQL) değil, şifreli ReTech API'sine bağlanır. Bu yüzden sadece Server IP ve Token yeterlidir.</span>
+                                Kameranız bozuksa veya QR okutamıyorsanız, mobil uygulamadaki <strong>Manuel Giriş</strong> ekranına aşağıdaki bilgileri yazabilirsiniz. <br/><span className="text-orange-500">Not: Güvenliğiniz için uygulama doğrudan Veritabanına (MySQL) değil, şifreli Envanzo API'sine bağlanır. Bu yüzden sadece Server IP ve Token yeterlidir.</span>
                             </p>
 
                             <div className="space-y-6">
@@ -155,7 +155,7 @@ export default function MobileApp({ serverIp, apiToken }: { serverIp: string, ap
                                     </div>
                                     <div>
                                         <h4 className="font-semibold mb-1">Uygulamayı İndir</h4>
-                                        <p className="text-sm text-muted-foreground">Android veya iOS mağazasından ReTech uygulamasını indirebilirsiniz.</p>
+                                        <p className="text-sm text-muted-foreground">Android veya iOS mağazasından Envanzo uygulamasını indirebilirsiniz.</p>
                                     </div>
                                 </div>
                             </div>

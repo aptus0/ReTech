@@ -2,7 +2,9 @@
     "$schema": "https://www.schemastore.org/package.json",
     "private": true,
     "type": "module",
+    "main": "electron.cjs",
     "scripts": {
+        "desktop": "concurrently \"php artisan serve\" \"npm run dev\" \"wait-on http://localhost:8000 && electron .\"",
         "build": "vite build",
         "build:ssr": "vite build && vite build --ssr",
         "dev": "vite",
@@ -18,6 +20,9 @@
         "@stylistic/eslint-plugin": "^5.10.0",
         "@types/node": "^22.13.5",
         "babel-plugin-react-compiler": "^1.0.0",
+        "concurrently": "^10.0.3",
+        "electron": "^43.1.0",
+        "electron-is-dev": "^3.0.1",
         "eslint": "^9.17.0",
         "eslint-config-prettier": "^10.0.1",
         "eslint-import-resolver-typescript": "^4.4.4",
@@ -26,7 +31,8 @@
         "eslint-plugin-react-hooks": "^7.0.0",
         "prettier": "^3.4.2",
         "prettier-plugin-tailwindcss": "^0.6.11",
-        "typescript-eslint": "^8.23.0"
+        "typescript-eslint": "^8.23.0",
+        "wait-on": "^9.0.10"
     },
     "dependencies": {
         "@fullcalendar/core": "^6.1.21",
@@ -60,7 +66,6 @@
         "axios": "^1.18.1",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
-        "concurrently": "^9.0.1",
         "date-fns": "^4.4.0",
         "globals": "^15.14.0",
         "html2canvas": "^1.4.1",
@@ -72,6 +77,8 @@
         "qz-tray": "^2.2.6",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
+        "react-easy-crop": "^6.2.2",
+        "react-image-crop": "^11.1.2",
         "recharts": "^3.9.0",
         "sonner": "^2.0.0",
         "tailwind-merge": "^3.0.1",

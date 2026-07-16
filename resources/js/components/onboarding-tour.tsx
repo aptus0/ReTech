@@ -6,8 +6,8 @@ export const onboardingEventTarget = new EventTarget();
 
 const TOUR_STEPS = [
     {
-        title: "Re Tech'e Hoş Geldiniz! 🚀",
-        content: "Re Tech Terminali, işletmenizin kasa, stok, e-belge ve barkod yönetimini tek bir noktadan, ışık hızında yapmanızı sağlar.",
+        title: "KobiX'e Hoş Geldiniz! 🚀",
+        content: "KobiXi, işletmenizin kasa, stok, e-belge ve barkod yönetimini tek bir noktadan, ışık hızında yapmanızı sağlar.",
         icon: "👋"
     },
     {
@@ -38,7 +38,7 @@ export function OnboardingTour() {
 
     useEffect(() => {
         // Otomatik başlama kontrolü
-        const isCompleted = localStorage.getItem('retech_onboarding_completed');
+        const isCompleted = localStorage.getItem('envanzo_onboarding_completed');
 
         if (!isCompleted) {
             setIsOpen(true);
@@ -65,7 +65,7 @@ export function OnboardingTour() {
     };
 
     const handleComplete = () => {
-        localStorage.setItem('retech_onboarding_completed', 'true');
+        localStorage.setItem('envanzo_onboarding_completed', 'true');
         setIsOpen(false);
     };
 

@@ -64,25 +64,34 @@ class GibPortalProvider implements EDocumentProviderInterface
                 $gib->login($this->setting->gib_user_code, $this->setting->gib_password);
             }
 
-            $gibInvoice = new \Mlevent\Fatura\Models\InvoiceModel();
+            $nameParts = explode(' ', $invoice->customer->name ?? 'Nihai Tüketici');
+            $surname = count($nameParts) > 1 ? array_pop($nameParts) : 'Tüketici';
+            $name = implode(' ', $nameParts);
+
+            $gibInvoice = new \Mlevent\Fatura\Models\InvoiceModel(
+                vknTckn: $invoice->customer->tax_number ?? '11111111111',
+                aliciAdi: $name,
+                aliciSoyadi: $surname,
+                mahalleSemtIlce: $invoice->customer->district ?? 'Belirtilmedi',
+                sehir: $invoice->customer->city ?? 'Belirtilmedi',
+                ulke: 'Türkiye',
+                adres: $invoice->customer->address ?? 'Adres Belirtilmedi',
+                tarih: $invoice->date->format('d/m/Y'),
+                saat: $invoice->date->format('H:i:s'),
+                vergiDairesi: $invoice->customer->tax_office ?? '',
+                not: 'Fatura No: ' . $invoice->invoice_number,
+            );
             
-            // Map our invoice model to GIB invoice model
             $gibInvoice->setUuid((string) str()->uuid());
-            $gibInvoice->setDocumentDate($invoice->date->format('d/m/Y'));
-            $gibInvoice->setDocumentTime($invoice->date->format('H:i:s'));
-            
-            $gibInvoice->setRecipientName($invoice->customer->name ?? 'Nihai Tüketici');
-            $gibInvoice->setRecipientId($invoice->customer->tax_number ?? '11111111111');
-            $gibInvoice->setRecipientTaxOffice($invoice->customer->tax_office ?? 'Dairesiz');
-            $gibInvoice->setRecipientAddress($invoice->customer->address ?? 'Adres Belirtilmedi');
             
             foreach ($invoice->items as $item) {
-                $gibInvoiceItem = new \Mlevent\Fatura\Models\InvoiceItemModel();
-                $gibInvoiceItem->setName($item->product->name ?? 'Ürün/Hizmet');
-                $gibInvoiceItem->setQuantity($item->quantity);
-                $gibInvoiceItem->setUnitPrice($item->unit_price);
-                $gibInvoiceItem->setVatRate($item->tax_rate ?? 20);
-                $gibInvoiceItem->setPrice($item->total);
+                $gibInvoiceItem = new \Mlevent\Fatura\Models\InvoiceItemModel(
+                    malHizmet: $item->product->name ?? 'Ürün/Hizmet',
+                    miktar: $item->quantity,
+                    birimFiyat: $item->unit_price,
+                    kdvOrani: $item->tax_rate ?? 20,
+                    birim: \Mlevent\Fatura\Enums\Unit::Adet
+                );
                 $gibInvoice->addItem($gibInvoiceItem);
             }
 

@@ -128,7 +128,7 @@ await qz.websocket.connect();
                         });
                         
                         if ('Notification' in window && Notification.permission === 'granted') {
-                            new Notification('ReTech Terminal', { body: `${item.product.name} otomatik yazdırıldı!` });
+                            new Notification('Envanzo Terminal', { body: `${item.product.name} otomatik yazdırıldı!` });
                         }
 
                         if ('vibrate' in navigator) {
@@ -203,7 +203,7 @@ await qz.websocket.connect();
                     toast.success(`${displayTitle} yazdırıldı!`);
                     
                     if ('Notification' in window && Notification.permission === 'granted') {
-                        new Notification('ReTech Terminal', { body: `${displayTitle} başarıyla yazdırıldı!` });
+                        new Notification('Envanzo Terminal', { body: `${displayTitle} başarıyla yazdırıldı!` });
                     }
 
                     if ('vibrate' in navigator) {

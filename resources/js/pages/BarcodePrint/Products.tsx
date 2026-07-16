@@ -89,7 +89,7 @@ copies = 1;
                     
                     // Show OS Notification for Mobile/Desktop
                     if ('Notification' in window && Notification.permission === 'granted') {
-                        new Notification('ReTech Terminal', { 
+                        new Notification('Envanzo Terminal', { 
                             body: 'Barkod yazdırma işlemi başarıyla tamamlandı!',
                             icon: '/favicon.ico' // Assuming a favicon exists
                         });

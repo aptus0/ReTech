@@ -53,7 +53,7 @@ export default function Index({ printers }: { printers: any[] }) {
             setLocalPrinters(data || []);
             toast.success(`${data.length} adet yazıcı bulundu!`);
         } catch (error) {
-            toast.error('ReTech Print Service çalışmıyor olabilir. Lütfen EXE uygulamasının arka planda çalıştığından emin olun.');
+            toast.error('Envanzo Print Service çalışmıyor olabilir. Lütfen EXE uygulamasının arka planda çalıştığından emin olun.');
         } finally {
             setIsScanning(false);
         }
