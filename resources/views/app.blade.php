@@ -30,13 +30,12 @@
             }
         </style>
 
-        <meta name="application-name" content="{{ config('app.name', 'Re Tech Terminal') }}">
-        <meta name="apple-mobile-web-app-title" content="Re Tech">
-        <meta name="theme-color" content="#f97316">
+        <meta name="application-name" content="{{ config('app.name', 'KobiX') }}">
+        <meta name="apple-mobile-web-app-title" content="KobiX">
+        <meta name="theme-color" content="#2563EB">
 
         <link rel="manifest" href="/site.webmanifest">
         <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         @fonts
@@ -44,7 +43,7 @@
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
         <x-inertia::head>
-            <title>{{ config('app.name', 'Re Tech Terminal') }}</title>
+            <title>{{ config('app.name', 'KobiX') }}</title>
         </x-inertia::head>
     </head>
     <body class="font-sans antialiased">

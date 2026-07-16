@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\CashRegister;
 use App\Models\PaymentMethod;
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,17 +16,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::firstOrCreate(
-            ['email' => 're@tech.com'],
-            [
-                'name' => 'Admin',
-                'password' => bcrypt('ReTech@2027!'),
-                'role' => 'admin',
-                'store_code' => 'ADMIN',
-                'personnel_no' => 'ADMIN',
-            ]
-        );
-
         CashRegister::firstOrCreate(
             ['id' => 1],
             [

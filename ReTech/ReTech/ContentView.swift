@@ -1,24 +1,22 @@
 //
 //  ContentView.swift
-//  ReTech
+//  Envanzo
 //
 
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage("serverURL") private var serverURL: String = ""
     @AppStorage("authToken") private var authToken: String = ""
-    
-    @State private var isShowingSplash = true
 
     var body: some View {
         Group {
-            if isShowingSplash {
-                SplashView(isShowingSplash: $isShowingSplash)
+            if authToken.isEmpty {
+                LoginView()
             } else {
                 MainTabView()
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: authToken.isEmpty)
     }
 }
 

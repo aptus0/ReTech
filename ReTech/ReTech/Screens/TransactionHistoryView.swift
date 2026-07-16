@@ -1,6 +1,6 @@
 //
 //  TransactionHistoryView.swift
-//  ReTech
+//  Envanzo
 //
 
 import SwiftUI
@@ -65,7 +65,7 @@ struct TransactionHistoryView: View {
     private var emptyView: some View {
         VStack(spacing: 14) {
             Image(systemName: "clock").font(.system(size: 48)).foregroundColor(DS.textTertiary)
-            Text("Henüz İşlem Yok").font(.system(size: 18, weight: .semibold)).foregroundColor(.white)
+            Text("Henüz İşlem Yok").font(.system(size: 18, weight: .semibold)).foregroundColor(DS.textPrimary)
             Text("Yapılan tüm stok işlemleri burada görünür.")
                 .font(.system(size: 14)).foregroundColor(DS.textSecondary)
                 .multilineTextAlignment(.center)
@@ -151,7 +151,7 @@ struct TransactionRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(item.product_name)
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(DS.textPrimary)
                     .lineLimit(1)
                 Text(item.barcode)
                     .font(.system(size: 11))

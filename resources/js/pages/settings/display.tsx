@@ -22,13 +22,13 @@ export default function DisplaySettings() {
     const [kioskMode, setKioskMode] = useState(false);
 
     useEffect(() => {
-        setResolution(localStorage.getItem('retech_resolution') || 'Auto');
-        setKioskMode(localStorage.getItem('retech_kiosk_mode') === 'true');
+        setResolution(localStorage.getItem('envanzo_resolution') || 'Auto');
+        setKioskMode(localStorage.getItem('envanzo_kiosk_mode') === 'true');
     }, []);
 
     const saveSettings = () => {
-        localStorage.setItem('retech_resolution', resolution);
-        localStorage.setItem('retech_kiosk_mode', kioskMode ? 'true' : 'false');
+        localStorage.setItem('envanzo_resolution', resolution);
+        localStorage.setItem('envanzo_kiosk_mode', kioskMode ? 'true' : 'false');
         
         toast.success('Görüntü ayarları kaydedildi. Sayfa yenileniyor...');
         setTimeout(() => window.location.reload(), 1500);

@@ -3,19 +3,19 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>Öz Turuncu</string>
+	<string>Çiğdem Giyim</string>
 	<key>CFBundleName</key>
-	<string>Öz Turuncu</string>
+	<string>Çiğdem Giyim</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>ReTech, barkodları ve QR kurulum kodlarını tarayabilmek için kameranıza erişim izni gerektirir.</string>
+	<string>Envanzo, barkodları ve QR kurulum kodlarını tarayabilmek için kameranıza erişim izni gerektirir.</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>ReTech, mağaza içindeki yerel ReTech sunucusuna bağlanmak için yerel ağ erişimi gerektirir.</string>
+	<string>Envanzo, mağaza içindeki yerel Envanzo sunucusuna bağlanmak için yerel ağ erişimi gerektirir.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>ReTech, yeni ürün kaydına ürün fotoğrafı ekleyebilmek için fotoğraf arşivinize erişim izni gerektirir.</string>
+	<string>Envanzo, yeni ürün kaydına ürün fotoğrafı ekleyebilmek için fotoğraf arşivinize erişim izni gerektirir.</string>
 </dict>
 </plist>

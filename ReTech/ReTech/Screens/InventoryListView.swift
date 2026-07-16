@@ -1,6 +1,6 @@
 //
 //  InventoryListView.swift
-//  ReTech
+//  Envanzo
 //
 
 import SwiftUI

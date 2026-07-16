@@ -5,16 +5,16 @@ using System.Text;
 using System.Net.NetworkInformation;
 using System.Linq;
 
-namespace ReTechKeyGen
+namespace EnvanzoKeyGen
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.Title = "ReTech Lisans ve Donanim Kimligi Uretici";
+            Console.Title = "Envanzo Lisans ve Donanim Kimligi Uretici";
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("==================================================");
-            Console.WriteLine("       RETECH DONANIM KIMLIGI (HWID) URETICI      ");
+            Console.WriteLine("       ENVANZO DONANIM KIMLIGI (HWID) URETICI      ");
             Console.WriteLine("==================================================");
             Console.ResetColor();
             Console.WriteLine("Sistem taranıyor...\n");
@@ -45,7 +45,7 @@ namespace ReTechKeyGen
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Lutfen bu 30 karakterlik anahtari kopyalayip");
-                Console.WriteLine("ReTech sistemine giris yapin.");
+                Console.WriteLine("Envanzo sistemine giris yapin.");
                 Console.ResetColor();
                 Console.WriteLine("==================================================");
             }
@@ -105,7 +105,7 @@ namespace ReTechKeyGen
         {
             using (SHA256 sha256Hash = SHA256.Create())
             {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData + "RETECH_SALT_2027!"));
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData + "ENVANZO_SALT_2027!"));
 
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < bytes.Length; i++)

@@ -1,15 +1,9 @@
-import type { ImgHTMLAttributes } from 'react';
+import { Package } from 'lucide-react';
 
-export default function AppLogoIcon(props: ImgHTMLAttributes<HTMLImageElement> & { className?: string }) {
-    // If className is not provided or it doesn't set a size, provide a sensible default size
-    const className = props.className || "w-8 h-8 rounded-xl object-contain";
-    
+export default function AppLogoIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
-        <img
-            src="/images/re-logo.png"
-            alt="ReTech Logo"
-            {...props}
-            className={className}
-        />
+        <div {...props} className={`flex items-center justify-center rounded-lg bg-orange-600 text-white ${props.className}`}>
+            <Package className="h-6 w-6" strokeWidth={1.5} />
+        </div>
     );
 }

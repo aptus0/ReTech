@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace ReTechPrintService
+namespace EnvanzoPrintService
 {
     public class RawPrinterHelper
     {

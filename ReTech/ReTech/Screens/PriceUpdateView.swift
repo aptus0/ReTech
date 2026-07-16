@@ -1,6 +1,6 @@
 //
 //  PriceUpdateView.swift
-//  ReTech
+//  Envanzo
 //
 
 import SwiftUI
@@ -73,7 +73,7 @@ struct PriceUpdateView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(prod.name)
                                 .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
+                                .foregroundColor(DS.textPrimary)
                                 .lineLimit(2)
                             Text(prod.barcode ?? prod.code ?? "—")
                                 .font(.system(size: 12))
@@ -92,7 +92,7 @@ struct PriceUpdateView: View {
                                 .foregroundColor(DS.textSecondary)
                             Text(String(format: "%.2f ₺", prod.sale_price))
                                 .font(.system(size: 22, weight: .bold))
-                                .foregroundColor(.white)
+                                .foregroundColor(DS.textPrimary)
                                 .strikethrough(true, color: DS.error.opacity(0.7))
                         }
                         Spacer()
@@ -262,7 +262,7 @@ func rtErrorState(message: String, onRetry: @escaping () -> Void) -> some View {
             Image(systemName: "xmark.circle.fill").font(.system(size: 44)).foregroundColor(DS.error)
         }
         Text("Ürün Bulunamadı")
-            .font(.system(size: 20, weight: .bold)).foregroundColor(.white)
+            .font(.system(size: 20, weight: .bold)).foregroundColor(DS.textPrimary)
         Text(message)
             .font(.system(size: 14)).foregroundColor(DS.textSecondary)
             .multilineTextAlignment(.center).padding(.horizontal, 36)

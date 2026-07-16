@@ -184,7 +184,11 @@ export default function SalesFlow({ products, customers: initialCustomers, regis
                                 <div className="flex gap-3 h-full">
                                     <div className="w-16 h-16 bg-neutral-100 dark:bg-neutral-800 rounded-md flex-shrink-0 flex items-center justify-center overflow-hidden border">
                                         {product.image ? (
-                                            <img src={`/storage/${product.image}`} alt={product.name} className="w-full h-full object-cover" />
+                                            <img 
+                                                src={product.image.startsWith('http') ? product.image : `/storage/${product.image}`} 
+                                                alt={product.name} 
+                                                className="w-full h-full object-cover" 
+                                            />
                                         ) : (
                                             <Package className="w-8 h-8 text-neutral-300" />
                                         )}

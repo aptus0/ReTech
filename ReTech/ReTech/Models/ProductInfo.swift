@@ -1,6 +1,6 @@
 //
 //  ProductInfo.swift
-//  ReTech
+//  Envanzo
 //
 
 import Foundation

@@ -10,7 +10,7 @@ class SystemController extends Controller
     {
         return response()->json([
             'success' => true,
-            'app' => 'Re Tech',
+            'app' => 'KobiX',
             'server' => 'Local Server',
             'version' => '1.0.0',
             'time' => now()->toDateTimeString(),

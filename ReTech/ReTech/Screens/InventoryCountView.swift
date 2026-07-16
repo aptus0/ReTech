@@ -1,6 +1,6 @@
 //
 //  InventoryCountView.swift
-//  ReTech
+//  Envanzo
 //
 
 import SwiftUI
@@ -72,7 +72,7 @@ struct InventoryCountView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(prod.name)
                                 .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
+                                .foregroundColor(DS.textPrimary)
                                 .lineLimit(2)
                             Text(prod.barcode ?? prod.code ?? "—")
                                 .font(.system(size: 12))

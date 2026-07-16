@@ -6,14 +6,12 @@ import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Re Tech Terminal';
+const appName = import.meta.env.VITE_APP_NAME || 'KobiX';
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     layout: (name) => {
         switch (true) {
-            case name === 'welcome':
-                return null;
             case name.startsWith('auth/'):
                 return AuthLayout;
             case name.startsWith('settings/'):
@@ -42,10 +40,13 @@ initializeTheme();
 // Register Service Worker for PWA (Desktop Installation)
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
+        // Disabled SW for development to prevent "Network fetch failed and no cache available" errors
+        /*
         navigator.serviceWorker.register('/sw.js').then(registration => {
             console.log('SW registered: ', registration);
         }).catch(registrationError => {
             console.log('SW registration failed: ', registrationError);
         });
+        */
     });
 }

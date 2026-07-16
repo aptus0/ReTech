@@ -149,7 +149,11 @@ export default function Edit({ product, categories, brands, units }: { product: 
                             <Label htmlFor="image">Ürün Görseli</Label>
                             {product.image && (
                                 <div className="mb-2">
-                                    <img src={`/storage/${product.image}`} alt={product.name} className="h-32 w-32 object-cover rounded-md border" />
+                                    <img 
+                                        src={product.image.startsWith('http') ? product.image : `/storage/${product.image}`} 
+                                        alt={product.name} 
+                                        className="h-32 w-32 object-cover rounded-md border" 
+                                    />
                                 </div>
                             )}
                             <Input 

@@ -1,6 +1,6 @@
 //
 //  LoginView.swift
-//  ReTech
+//  Envanzo
 //
 
 import SwiftUI
@@ -46,12 +46,12 @@ struct LoginView: View {
                                 .fill(DS.primaryGradient)
                                 .frame(width: 80, height: 80)
                                 .shadow(color: DS.primary.opacity(0.5), radius: 20, x: 0, y: 10)
-                            Text("R")
+                            Text("Ç")
                                 .font(.system(size: 44, weight: .black, design: .rounded))
                                 .foregroundColor(.white)
                         }
                         VStack(spacing: 5) {
-                            Text("Öz Turuncu")
+                            Text("Çiğdem Giyim")
                                 .font(.system(size: 28, weight: .bold, design: .rounded))
                                 .foregroundColor(DS.textPrimary)
                             Text("Hesabınıza giriş yapın")

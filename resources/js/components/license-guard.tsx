@@ -10,7 +10,7 @@ export function LicenseGuard() {
     const [isTrial, setIsTrial] = useState(true);
 
     useEffect(() => {
-        const key = localStorage.getItem('retech_activation_key');
+        const key = localStorage.getItem('envanzo_activation_key');
 
         if (key && key.length > 5) {
             setIsTrial(false);
@@ -19,11 +19,11 @@ export function LicenseGuard() {
         }
 
         // Handle Trial Logic
-        let trialStartStr = localStorage.getItem('retech_trial_start');
+        let trialStartStr = localStorage.getItem('envanzo_trial_start');
 
         if (!trialStartStr) {
             trialStartStr = new Date().toISOString();
-            localStorage.setItem('retech_trial_start', trialStartStr);
+            localStorage.setItem('envanzo_trial_start', trialStartStr);
         }
 
         const trialStartDate = new Date(trialStartStr);
@@ -46,7 +46,7 @@ export function LicenseGuard() {
         e.preventDefault();
 
         if (activationKey.length > 5) {
-            localStorage.setItem('retech_activation_key', activationKey);
+            localStorage.setItem('envanzo_activation_key', activationKey);
             setIsActivationModalOpen(false);
             setIsTrial(false);
             toast.success('Uygulama başarıyla aktifleştirildi.');
@@ -60,7 +60,7 @@ export function LicenseGuard() {
         <Dialog open={isActivationModalOpen} onOpenChange={() => {}}>
             <DialogContent className="sm:max-w-md [&>button]:hidden outline-none pointer-events-auto z-[99999]" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
                 <DialogHeader>
-                    <DialogTitle className="text-red-600">Re Tech Lisans Süresi Doldu</DialogTitle>
+                    <DialogTitle className="text-red-600">KobiX Lisans Süresi Doldu</DialogTitle>
                 </DialogHeader>
                 <div className="py-4">
                     <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-4">

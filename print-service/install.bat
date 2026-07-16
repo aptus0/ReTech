@@ -6,8 +6,8 @@ IF %ERRORLEVEL% NEQ 0 (
     exit /b
 )
 
-set SERVICE_NAME=ReTechPrintService
-set INSTALL_DIR=C:\ReTechPrintService
+set SERVICE_NAME=EnvanzoPrintService
+set INSTALL_DIR=C:\EnvanzoPrintService
 
 echo Kurulum Basliyor...
 
@@ -16,17 +16,17 @@ if not exist "%INSTALL_DIR%" (
 )
 
 echo Dosyalar kopyalaniyor...
-copy /Y "ReTechPrintService.exe" "%INSTALL_DIR%\ReTechPrintService.exe"
+copy /Y "EnvanzoPrintService.exe" "%INSTALL_DIR%\EnvanzoPrintService.exe"
 
 echo Servis durduruluyor ve siliniyor (Varsa)...
 sc stop "%SERVICE_NAME%"
 sc delete "%SERVICE_NAME%"
 
 echo Servis yukleniyor...
-sc create "%SERVICE_NAME%" binPath= "%INSTALL_DIR%\ReTechPrintService.exe" start= auto
+sc create "%SERVICE_NAME%" binPath= "%INSTALL_DIR%\EnvanzoPrintService.exe" start= auto
 
 echo Servis baslatiliyor...
 sc start "%SERVICE_NAME%"
 
-echo Kurulum Tamamlandi! ReTech Print Service artik arka planda calisiyor.
+echo Kurulum Tamamlandi! Envanzo Print Service artik arka planda calisiyor.
 pause

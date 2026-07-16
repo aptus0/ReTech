@@ -1,6 +1,6 @@
 //
 //  DesignSystem.swift
-//  ReTech — Merkezi tasarım sistemi / design tokens
+//  Envanzo — Merkezi tasarım sistemi / design tokens
 //
 
 import SwiftUI

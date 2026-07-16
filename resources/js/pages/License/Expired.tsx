@@ -49,7 +49,7 @@ export default function Expired({ client_ip }: { client_ip: string }) {
                             14 Günlük Ücretsiz Sürüm Sona Erdi
                         </h1>
                         <h2 className="text-xl font-bold text-neutral-300">
-                            ReTech Sistem Erişimi Kilitlendi
+                            Envanzo Sistem Erişimi Kilitlendi
                         </h2>
                     </div>
 
@@ -81,7 +81,7 @@ export default function Expired({ client_ip }: { client_ip: string }) {
                                         <AlertTriangle className="w-6 h-6 mr-3 shrink-0 mt-0.5" />
                                         <p className="text-sm leading-relaxed text-justify">
                                             <strong className="text-red-500 block mb-1">DİKKAT! YASAL UYARI VE GÜVENLİK PROTOKOLÜ</strong>
-                                            ReTech deneme süreniz dolmuştur. Güvenlik protokolü gereği sistem veritabanı erişimlerini geçici olarak durdurmuştur. 
+                                            Envanzo deneme süreniz dolmuştur. Güvenlik protokolü gereği sistem veritabanı erişimlerini geçici olarak durdurmuştur. 
                                             Şu anda bu makinenin <strong className="text-red-300">İç/Dış IP Adresi ({client_ip})</strong> kayıt altındadır.
                                         </p>
                                     </div>
@@ -131,7 +131,7 @@ export default function Expired({ client_ip }: { client_ip: string }) {
                                 <div className="bg-neutral-900 border-2 border-green-900/50 rounded-xl overflow-hidden relative shadow-2xl">
                                     <div className="absolute top-0 right-0 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">EN ÇOK SATAN</div>
                                     <div className="p-6 text-center border-b border-neutral-800 bg-black/50">
-                                        <h3 className="text-2xl font-bold text-white mb-2">ReTech Ömür Boyu Lisans</h3>
+                                        <h3 className="text-2xl font-bold text-white mb-2">Envanzo Ömür Boyu Lisans</h3>
                                         <div className="flex items-center justify-center gap-2">
                                             <span className="text-5xl font-black text-green-500">499,99</span>
                                             <span className="text-2xl font-bold text-neutral-400">₺</span>

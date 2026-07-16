@@ -1,6 +1,6 @@
 //
 //  HomeView.swift
-//  ReTech
+//  Envanzo
 //
 
 import SwiftUI
@@ -58,7 +58,7 @@ struct HomeView: View {
                 Text("Hoş Geldiniz 👋")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(DS.textSecondary)
-                Text(userName.isEmpty ? "ReTech Kullanıcısı" : userName)
+                Text(userName.isEmpty ? "Envanzo Kullanıcısı" : userName)
                     .font(.system(size: 26, weight: .bold, design: .rounded))
                     .foregroundColor(DS.textPrimary)
             }
@@ -140,7 +140,7 @@ struct HomeView: View {
                     Image(systemName: "bolt.shield.fill")
                         .font(.system(size: 14))
                         .foregroundColor(Color.white)
-                    Text("ReTech Yönetim Sistemi")
+                    Text("Envanzo Yönetim Sistemi")
                         .font(.system(size: 13, weight: .bold))
                         .foregroundColor(Color.white)
                 }
